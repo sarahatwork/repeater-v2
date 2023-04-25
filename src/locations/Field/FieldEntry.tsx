@@ -3,14 +3,29 @@ import FieldEntryField from "./FieldEntryField";
 import { FieldAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import { TFieldTypeValue } from "../../constants";
+import {
+  FormControl,
+  Heading,
+  IconButton,
+  Stack,
+} from "@contentful/f36-components";
+import { DeleteIcon } from "@contentful/f36-icons";
 
 interface IProps {
+  onDelete: (id: string) => void;
   onUpdate: (index: number, id: string, value: string) => void;
-  initialValue: Record<string, any>;
+  initialValue: { id: string; fields: Record<string, any> };
   index: number;
+  id: string;
 }
 
-const FieldEntry: React.FC<IProps> = ({ index, initialValue, onUpdate }) => {
+const FieldEntry: React.FC<IProps> = ({
+  index,
+  id,
+  initialValue,
+  onUpdate,
+  onDelete,
+}) => {
   const sdk = useSDK<FieldAppSDK>();
   const handleUpdate = useCallback(
     (id: string, value: string) => {
@@ -18,17 +33,34 @@ const FieldEntry: React.FC<IProps> = ({ index, initialValue, onUpdate }) => {
     },
     [onUpdate, index]
   );
+
+  const handleDelete = useCallback(() => {
+    onDelete(id);
+  }, [id]);
+
   return (
     <>
-      {Object.entries(initialValue).map(([fieldId, value], i) => {
-        const id = `field${i + 1}`;
+      <Stack justifyContent="space-between">
+        <Heading>Entry {index + 1}</Heading>
+        <IconButton
+          aria-label="Delete"
+          onClick={handleDelete}
+          icon={<DeleteIcon />}
+        />
+      </Stack>
+      {Object.entries(initialValue.fields).map(([fieldId, value], i) => {
         return (
-          <FieldEntryField
-            id={id}
-            onUpdate={handleUpdate}
-            type={sdk.parameters.instance[`${id}Type`] as TFieldTypeValue}
-            initialValue={initialValue[id]}
-          />
+          <FormControl key={fieldId}>
+            <FormControl.Label>Field {i + 1}</FormControl.Label>
+            <FieldEntryField
+              id={fieldId}
+              onUpdate={handleUpdate}
+              type={
+                sdk.parameters.instance[`${fieldId}Type`] as TFieldTypeValue
+              }
+              initialValue={value}
+            />
+          </FormControl>
         );
       })}
     </>

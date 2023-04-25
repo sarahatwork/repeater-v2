@@ -13,7 +13,7 @@ interface IProps {
   initialValue?: string;
 }
 
-const FieldEntry: React.FC<IProps> = ({
+const FieldEntryField: React.FC<IProps> = ({
   type,
   id,
   onUpdate,
@@ -28,7 +28,7 @@ const FieldEntry: React.FC<IProps> = ({
   useEffect(() => {
     field.setValue(initialValue);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialValue]);
+  }, []);
 
   mitt.on("setValue", (value) => onUpdate(id, value));
 
@@ -47,4 +47,4 @@ const FieldEntry: React.FC<IProps> = ({
   }
 };
 
-export default FieldEntry;
+export default FieldEntryField;
