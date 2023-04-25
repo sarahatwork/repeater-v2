@@ -1,37 +1,47 @@
 import { FieldAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
-import Item from "./Item";
+import FieldEntry from "./FieldEntry";
 import { useCallback, useState } from "react";
 import { Button, Form, FormControl } from "@contentful/f36-components";
+
+const createNewItem = () => ({
+  field1: "",
+});
 
 const Field = () => {
   const sdk = useSDK<FieldAppSDK>();
   const initialValue = sdk.field.getValue();
-  const initialData = initialValue?.[0] || {};
-  const [data, setData] = useState<{ field1: string }>({
-    field1: "",
-    ...initialData,
-  });
+  const [data, setData] = useState<any[]>(initialValue);
 
   // Should this be done on autosave instead??
   const handleSubmit = useCallback(async () => {
-    await sdk.field.setValue([data]);
+    await sdk.field.setValue(data);
   }, [sdk, data]);
 
-  const handleUpdate = useCallback((id: string, value: string) => {
-    setData((d) => ({ ...d, [id]: value }));
+  const handleUpdate = useCallback(
+    (index: number, id: string, value: string) => {
+      setData((d) => {
+        const newData = [...d];
+        newData[index][id] = value;
+        return newData;
+      });
+    },
+    []
+  );
+
+  const handleAddNew = useCallback(() => {
+    setData((d) => [...d, createNewItem()]);
   }, []);
 
   return (
     <Form onSubmit={handleSubmit}>
-      <FormControl>
-        <Item
-          type={sdk.parameters.instance.field1Type}
-          id="field1"
-          onUpdate={handleUpdate}
-          initialValue={initialData.field1}
-        />
-      </FormControl>
+      {data.map((entry, i) => (
+        <FormControl key={i}>
+          <FieldEntry onUpdate={handleUpdate} initialValue={entry} index={i} />
+        </FormControl>
+      ))}
+
+      <Button onClick={handleAddNew}>Add New</Button>
       <Button variant="primary" type="submit">
         Submit
       </Button>

@@ -13,7 +13,12 @@ interface IProps {
   initialValue?: string;
 }
 
-const Item: React.FC<IProps> = ({ type, id, onUpdate, initialValue = "" }) => {
+const FieldEntry: React.FC<IProps> = ({
+  type,
+  id,
+  onUpdate,
+  initialValue = "",
+}) => {
   const [field, mitt] = createFakeFieldAPI((f) => ({
     ...f,
     id,
@@ -42,4 +47,4 @@ const Item: React.FC<IProps> = ({ type, id, onUpdate, initialValue = "" }) => {
   }
 };
 
-export default Item;
+export default FieldEntry;
