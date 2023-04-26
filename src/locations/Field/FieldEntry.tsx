@@ -2,7 +2,6 @@ import { useCallback } from "react";
 import FieldEntryField from "./FieldEntryField";
 import { FieldAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
-import { TFieldTypeValue } from "../../constants";
 import {
   FormControl,
   Heading,
@@ -10,11 +9,12 @@ import {
   Stack,
 } from "@contentful/f36-components";
 import { DeleteIcon } from "@contentful/f36-icons";
+import { TFieldTypeValue } from "../../types";
 
 interface IProps {
   onDelete: (id: string) => void;
   onUpdate: (index: number, id: string, value: string) => void;
-  initialValue: { id: string; fields: Record<string, any> };
+  initialValue: { id: string; fieldItems: Record<string, any> };
   index: number;
   id: string;
 }
@@ -36,7 +36,7 @@ const FieldEntry: React.FC<IProps> = ({
 
   const handleDelete = useCallback(() => {
     onDelete(id);
-  }, [id]);
+  }, [onDelete, id]);
 
   return (
     <>
@@ -48,7 +48,7 @@ const FieldEntry: React.FC<IProps> = ({
           icon={<DeleteIcon />}
         />
       </Stack>
-      {Object.entries(initialValue.fields).map(([fieldId, value], i) => {
+      {Object.entries(initialValue.fieldItems).map(([fieldId, value], i) => {
         return (
           <FormControl key={fieldId}>
             <FormControl.Label>Field {i + 1}</FormControl.Label>

@@ -7,7 +7,7 @@ import { v4 as uuid } from "uuid";
 
 const createNewItem = () => ({
   id: uuid(),
-  fields: {
+  fieldItems: {
     field1: "",
   },
 });
@@ -15,16 +15,16 @@ const createNewItem = () => ({
 const Field = () => {
   const sdk = useSDK<FieldAppSDK>();
   const [data, setData] = useState<
-    { id: string; fields: Record<string, any> }[]
+    { id: string; fieldItems: Record<string, any> }[]
   >(sdk.field.getValue() || []);
 
   const handleUpdate = useCallback(
     (index: number, id: string, value: string) => {
-      if (data[index].fields[id] === value) return;
+      if (data[index].fieldItems[id] === value) return;
 
       setData((d) => {
         const newData = [...d];
-        newData[index].fields[id] = value;
+        newData[index].fieldItems[id] = value;
         sdk.field.setValue(newData);
         return newData;
       });

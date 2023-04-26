@@ -1,13 +1,14 @@
 import contentful from "contentful-management";
 import dotenv from "dotenv";
-import { FieldTypes, TFieldTypeValue } from "../src/constants";
+import { FieldTypes } from "../src/constants.ts";
+import { TFieldTypeValue } from "../src/types.ts";
 
 dotenv.config({ path: ".env.local" });
 
 const FIELD_TYPE_TO_LABEL: Record<TFieldTypeValue, string> = {
   [FieldTypes.NONE]: "None",
   [FieldTypes.TEXT]: "Text",
-  [FieldTypes.SLUG]: "Slug",
+  [FieldTypes.MEDIA]: "Media",
 };
 
 const options = Object.entries(FIELD_TYPE_TO_LABEL).map(([k, v]) => ({
