@@ -10,6 +10,7 @@ import { useSDK } from "@contentful/react-apps-toolkit";
 import { IEntryProperty } from "../../lib/types";
 import { FormControl } from "@contentful/f36-components";
 import { getValidationMessage } from "../../lib/propertyUtils";
+import { RichTextEditor } from "@contentful/field-editor-rich-text";
 
 interface IProps {
   property: IEntryProperty;
@@ -45,6 +46,10 @@ const FieldEntryProperty: React.FC<IProps> = ({
             isInitiallyDisabled={false}
             withCharValidation={false}
           />
+        );
+      case "richText":
+        return (
+          <RichTextEditor sdk={{ ...sdk, field }} isInitiallyDisabled={false} />
         );
       case "media":
         return (
