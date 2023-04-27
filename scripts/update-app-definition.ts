@@ -1,19 +1,19 @@
 import contentful from "contentful-management";
 import dotenv from "dotenv";
-import { FieldTypes } from "../src/constants.ts";
-import { TFieldTypeValue } from "../src/types.ts";
+// import { PropertyTypes } from "../src/constants.ts";
+// import { TPropertyTypeValue } from "../src/types.ts";
 
 dotenv.config({ path: ".env.local" });
 
-const FIELD_TYPE_TO_LABEL: Record<TFieldTypeValue, string> = {
-  [FieldTypes.NONE]: "None",
-  [FieldTypes.TEXT]: "Text",
-  [FieldTypes.MEDIA]: "Media",
-};
+// const FIELD_TYPE_TO_LABEL: Record<TPropertyTypeValue, string> = {
+//   [PropertyTypes.NONE]: "None",
+//   [PropertyTypes.TEXT]: "Text",
+//   [PropertyTypes.MEDIA]: "Media",
+// };
 
-const options = Object.entries(FIELD_TYPE_TO_LABEL).map(([k, v]) => ({
-  [k]: v,
-}));
+// const options = Object.entries(FIELD_TYPE_TO_LABEL).map(([k, v]) => ({
+//   [k]: v,
+// }));
 
 const run = async () => {
   if (!process.env.CONTENTFUL_CONTENT_MANAGEMENT_TOKEN)
@@ -28,11 +28,10 @@ const run = async () => {
   appDefinition.parameters = {
     instance: [
       {
-        id: "field1Type",
-        type: "Enum",
-        name: "Field 1 Type",
-        options,
-        default: "none",
+        id: "PropertyTypes",
+        type: "Symbol",
+        name: "Field Types",
+        default: "text",
         required: true,
       },
     ],

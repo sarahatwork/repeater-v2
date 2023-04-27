@@ -4,66 +4,79 @@ import FieldEntry from "./FieldEntry";
 import { useCallback, useEffect, useState } from "react";
 import { Button, Stack } from "@contentful/f36-components";
 import { v4 as uuid } from "uuid";
+import { IEntry, IPropertyDefinition } from "../../types";
 
-const createNewItem = () => ({
-  id: uuid(),
-  fieldItems: {
-    field1: "",
+const propertyDefinitions: IPropertyDefinition[] = [
+  {
+    label: "Title",
+    name: "title",
+    type: "text",
   },
-});
+  {
+    label: "Photo",
+    name: "photo",
+    type: "media",
+  },
+];
 
 const Field = () => {
   const sdk = useSDK<FieldAppSDK>();
-  const [data, setData] = useState<
-    { id: string; fieldItems: Record<string, any> }[]
-  >(sdk.field.getValue() || []);
+  const [entries, setEntries] = useState<IEntry[]>(sdk.field.getValue() || []);
+  // const PropertyTypes = sdk.parameters.instance.PropertyTypes.split(
+  //   ","
+  // ) as TPropertyTypeValue[];
 
   const handleUpdate = useCallback(
-    (index: number, id: string, value: string) => {
-      if (data[index].fieldItems[id] === value) return;
+    (entryIndex: number, propertyIndex: number, value: string) => {
+      const property = entries[entryIndex].properties[propertyIndex];
+      if (property.value === value) return;
 
-      setData((d) => {
-        const newData = [...d];
-        newData[index].fieldItems[id] = value;
-        sdk.field.setValue(newData);
-        return newData;
+      setEntries((e) => {
+        const newEntries = [...e];
+        newEntries[entryIndex].properties[propertyIndex].value = value;
+        sdk.field.setValue(newEntries);
+        return newEntries;
       });
     },
-    [data, sdk.field]
+    [entries, sdk.field]
   );
 
   const handleDelete = useCallback(
     (id: string) => {
-      setData((d) => {
-        const newData = d.filter((entry) => entry.id !== id);
-        sdk.field.setValue(newData);
-        return newData;
+      setEntries((e) => {
+        const newEntries = e.filter((entry) => entry.id !== id);
+        sdk.field.setValue(newEntries);
+        return newEntries;
       });
     },
     [sdk.field]
   );
 
   const handleAddNew = useCallback(() => {
-    setData((d) => [...d, createNewItem()]);
+    const newEntry = {
+      id: uuid(),
+      properties: propertyDefinitions.map((definition) => ({
+        ...definition,
+        value: "",
+      })),
+    };
+    setEntries((e) => [...e, newEntry]);
   }, []);
 
   useEffect(() => {
-    sdk.window.updateHeight();
-  }, [sdk, data]);
-
-  console.log("====data", data);
+    setTimeout(() => sdk.window.updateHeight(), 0);
+  }, [sdk, entries]);
 
   return (
     <div>
       <Stack flexDirection="column" spacing="spacingS" alignItems="stretch">
-        {data.map((entry, i) => (
+        {entries.map((entry, index) => (
           <FieldEntry
             onDelete={handleDelete}
             onUpdate={handleUpdate}
-            initialValue={entry}
-            index={i}
+            index={index}
+            entry={entry}
             key={entry.id}
-            id={entry.id}
           />
         ))}
 
