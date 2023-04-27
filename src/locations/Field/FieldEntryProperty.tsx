@@ -9,6 +9,7 @@ import { FieldAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import { IEntryProperty } from "../../lib/types";
 import { FormControl } from "@contentful/f36-components";
+import { getValidationMessage } from "../../lib/propertyUtils";
 
 interface IProps {
   property: IEntryProperty;
@@ -24,6 +25,7 @@ const FieldEntryProperty: React.FC<IProps> = ({
   const [field, mitt] = createFakeFieldAPI();
   const locales = createFakeLocalesAPI();
   const sdk = useSDK<FieldAppSDK>();
+  const validationMessage = getValidationMessage(property);
 
   useEffect(() => {
     field.setValue(property.value);
@@ -31,6 +33,7 @@ const FieldEntryProperty: React.FC<IProps> = ({
   }, []);
 
   mitt.on("setValue", (value) => onUpdate(index, value));
+  mitt.on("removeValue", () => onUpdate(index, ""));
 
   const body = useMemo(() => {
     switch (property.type) {
@@ -63,6 +66,11 @@ const FieldEntryProperty: React.FC<IProps> = ({
       {body}
       {property.isRequired && (
         <FormControl.HelpText>Required</FormControl.HelpText>
+      )}
+      {validationMessage && (
+        <FormControl.ValidationMessage>
+          {validationMessage}
+        </FormControl.ValidationMessage>
       )}
     </FormControl>
   );

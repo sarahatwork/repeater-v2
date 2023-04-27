@@ -1,5 +1,6 @@
 import {
   IEntry,
+  IEntryProperty,
   IPropertyDefinition,
   ISdkEntry,
   PropertyTypeSchema,
@@ -47,4 +48,20 @@ export const parsePropertyDefinitions = (
       name: camelCase(label),
     };
   });
+};
+
+export const getValidationMessage = (
+  property: IEntryProperty
+): string | null => {
+  if (property.isRequired && !property.value) {
+    return "Field is required";
+  }
+
+  return null;
+};
+
+export const getIsFormValid = (entries: IEntry[]) => {
+  return entries.some((entry) =>
+    entry.properties.some((property) => getValidationMessage(property))
+  );
 };

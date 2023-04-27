@@ -6,6 +6,7 @@ import { Button, Stack } from "@contentful/f36-components";
 import { v4 as uuid } from "uuid";
 import { IEntry } from "../../lib/types";
 import {
+  getIsFormValid,
   parsePropertyDefinitions,
   parseSdkEntries,
   stringifyEntriesForSdk,
@@ -16,6 +17,7 @@ const Field = () => {
   const [entries, setEntries] = useState<IEntry[]>(
     parseSdkEntries(sdk.field.getValue())
   );
+
   const propertyDefinitions = useMemo(
     () => parsePropertyDefinitions(sdk.parameters.instance.propertyDefinitions),
     [sdk.parameters.instance.propertyDefinitions]
@@ -56,6 +58,7 @@ const Field = () => {
   useEffect(() => {
     setTimeout(() => sdk.window.updateHeight(), 0);
     sdk.field.setValue(stringifyEntriesForSdk(entries));
+    sdk.field.setInvalid(getIsFormValid(entries));
   }, [sdk, entries]);
 
   return (
