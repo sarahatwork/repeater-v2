@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import FieldEntryProperty from "./FieldEntryProperty";
 import { Heading, IconButton, Stack } from "@contentful/f36-components";
 import { DeleteIcon } from "@contentful/f36-icons";
-import { IEntry } from "../../types";
+import { IEntry } from "../../lib/types";
 
 interface IProps {
   onDelete: (id: string) => void;

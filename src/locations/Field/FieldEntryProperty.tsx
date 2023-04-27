@@ -7,7 +7,7 @@ import { useEffect, useMemo } from "react";
 import { SingleMediaEditor } from "@contentful/field-editor-reference";
 import { FieldAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
-import { IEntryProperty } from "../../types";
+import { IEntryProperty } from "../../lib/types";
 import { FormControl } from "@contentful/f36-components";
 
 interface IProps {
@@ -46,13 +46,10 @@ const FieldEntryProperty: React.FC<IProps> = ({
       case "media":
         return (
           <SingleMediaEditor
-            // field={field}
-            // locales={locales}
             isInitiallyDisabled={false}
             sdk={{ ...sdk, field }}
             viewType="card"
             parameters={{ instance: {} }}
-            // withCharValidation={false}
           />
         );
       default:

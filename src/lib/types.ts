@@ -1,11 +1,14 @@
+import { z } from "zod";
 import { PropertyTypes } from "./constants";
 
-type TPropertyType = (typeof PropertyTypes)[keyof typeof PropertyTypes];
+export const PropertyTypeSchema = z.nativeEnum(PropertyTypes);
+export type TPropertyType = z.infer<typeof PropertyTypeSchema>;
 
 export interface IPropertyDefinition {
   label: string;
   name: string;
   type: TPropertyType;
+  isRequired: boolean;
 }
 
 export interface IEntry {

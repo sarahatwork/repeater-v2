@@ -1,30 +1,19 @@
 import { FieldAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import FieldEntry from "./FieldEntry";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button, Stack } from "@contentful/f36-components";
 import { v4 as uuid } from "uuid";
-import { IEntry, IPropertyDefinition } from "../../types";
-
-const propertyDefinitions: IPropertyDefinition[] = [
-  {
-    label: "Title",
-    name: "title",
-    type: "text",
-  },
-  {
-    label: "Photo",
-    name: "photo",
-    type: "media",
-  },
-];
+import { IEntry } from "../../lib/types";
+import { parsePropertyDefinitions } from "../../lib/propertyUtils";
 
 const Field = () => {
   const sdk = useSDK<FieldAppSDK>();
   const [entries, setEntries] = useState<IEntry[]>(sdk.field.getValue() || []);
-  // const PropertyTypes = sdk.parameters.instance.PropertyTypes.split(
-  //   ","
-  // ) as TPropertyTypeValue[];
+  const propertyDefinitions = useMemo(
+    () => parsePropertyDefinitions(sdk.parameters.instance.propertyDefinitions),
+    [sdk.parameters.instance.propertyDefinitions]
+  );
 
   const handleUpdate = useCallback(
     (entryIndex: number, propertyIndex: number, value: string) => {
@@ -61,7 +50,7 @@ const Field = () => {
       })),
     };
     setEntries((e) => [...e, newEntry]);
-  }, []);
+  }, [propertyDefinitions]);
 
   useEffect(() => {
     setTimeout(() => sdk.window.updateHeight(), 0);
