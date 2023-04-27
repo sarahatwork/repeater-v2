@@ -19,3 +19,12 @@ export interface IEntry {
 export interface IEntryProperty extends IPropertyDefinition {
   value: any;
 }
+
+export interface ISdkEntry {
+  id: string;
+  properties: ISdkEntryProperty[];
+}
+
+export interface ISdkEntryProperty extends IPropertyDefinition {
+  data: string;
+}

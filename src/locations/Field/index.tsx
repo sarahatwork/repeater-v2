@@ -5,11 +5,17 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button, Stack } from "@contentful/f36-components";
 import { v4 as uuid } from "uuid";
 import { IEntry } from "../../lib/types";
-import { parsePropertyDefinitions } from "../../lib/propertyUtils";
+import {
+  parsePropertyDefinitions,
+  parseSdkEntries,
+  stringifyEntriesForSdk,
+} from "../../lib/propertyUtils";
 
 const Field = () => {
   const sdk = useSDK<FieldAppSDK>();
-  const [entries, setEntries] = useState<IEntry[]>(sdk.field.getValue() || []);
+  const [entries, setEntries] = useState<IEntry[]>(
+    parseSdkEntries(sdk.field.getValue())
+  );
   const propertyDefinitions = useMemo(
     () => parsePropertyDefinitions(sdk.parameters.instance.propertyDefinitions),
     [sdk.parameters.instance.propertyDefinitions]
@@ -23,23 +29,18 @@ const Field = () => {
       setEntries((e) => {
         const newEntries = [...e];
         newEntries[entryIndex].properties[propertyIndex].value = value;
-        sdk.field.setValue(newEntries);
         return newEntries;
       });
     },
-    [entries, sdk.field]
+    [entries]
   );
 
-  const handleDelete = useCallback(
-    (id: string) => {
-      setEntries((e) => {
-        const newEntries = e.filter((entry) => entry.id !== id);
-        sdk.field.setValue(newEntries);
-        return newEntries;
-      });
-    },
-    [sdk.field]
-  );
+  const handleDelete = useCallback((id: string) => {
+    setEntries((e) => {
+      const newEntries = e.filter((entry) => entry.id !== id);
+      return newEntries;
+    });
+  }, []);
 
   const handleAddNew = useCallback(() => {
     const newEntry = {
@@ -54,6 +55,7 @@ const Field = () => {
 
   useEffect(() => {
     setTimeout(() => sdk.window.updateHeight(), 0);
+    sdk.field.setValue(stringifyEntriesForSdk(entries));
   }, [sdk, entries]);
 
   return (
