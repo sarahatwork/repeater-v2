@@ -57,10 +57,15 @@ const FieldEntryProperty: React.FC<IProps> = ({
     }
   }, [field, locales, sdk, property.type]);
 
+  // console.log(property);
+
   return (
     <FormControl>
       <FormControl.Label>{property.label}</FormControl.Label>
       {body}
+      {property.isRequired && (
+        <FormControl.HelpText>Required</FormControl.HelpText>
+      )}
     </FormControl>
   );
 };
