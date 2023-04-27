@@ -57,8 +57,6 @@ const FieldEntryProperty: React.FC<IProps> = ({
     }
   }, [field, locales, sdk, property.type]);
 
-  // console.log(property);
-
   return (
     <FormControl>
       <FormControl.Label>{property.label}</FormControl.Label>

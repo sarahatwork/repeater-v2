@@ -9,18 +9,18 @@ import camelCase from "lodash/camelCase";
 const PROPERTY_DEF_REGEX = /([\w\s]+):(\w+)(!?)/;
 
 export const parseSdkEntries = (sdkEntries?: ISdkEntry[]): IEntry[] =>
-  sdkEntries?.map((entry) => ({
+  sdkEntries?.map(({ repeaterProperties, ...entry }) => ({
     ...entry,
-    properties: entry.properties.map(({ data, ...property }) => ({
+    properties: repeaterProperties.map(({ data, ...property }) => ({
       ...property,
       value: JSON.parse(data),
     })),
   })) || [];
 
 export const stringifyEntriesForSdk = (entries: IEntry[]): ISdkEntry[] =>
-  entries.map((entry) => ({
+  entries.map(({ properties, ...entry }) => ({
     ...entry,
-    properties: entry.properties.map(({ value, ...property }) => ({
+    repeaterProperties: properties.map(({ value, ...property }) => ({
       ...property,
       data: JSON.stringify(value),
     })),

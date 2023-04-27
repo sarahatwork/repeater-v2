@@ -22,7 +22,7 @@ export interface IEntryProperty extends IPropertyDefinition {
 
 export interface ISdkEntry {
   id: string;
-  properties: ISdkEntryProperty[];
+  repeaterProperties: ISdkEntryProperty[];
 }
 
 export interface ISdkEntryProperty extends IPropertyDefinition {
