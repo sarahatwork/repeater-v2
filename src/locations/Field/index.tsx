@@ -14,12 +14,33 @@ import {
 import FieldEntryForm from "./FieldEntryForm";
 import { EntityProvider } from "@contentful/field-editor-reference";
 import { PlusIcon } from "@contentful/f36-icons";
+import {
+  DndContext,
+  DragEndEvent,
+  useSensors,
+  PointerSensor,
+  KeyboardSensor,
+  useSensor,
+  closestCenter,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 const Field = () => {
   const sdk = useSDK<FieldAppSDK>();
   const initialEntries = parseSdkEntries(sdk.field.getValue());
   const [entries, setEntries] = useState<IEntry[]>(initialEntries);
   const [editingEntryId, setEditingEntryId] = useState<string>();
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const propertyDefinitions = useMemo(
     () => parsePropertyDefinitions(sdk.parameters.instance.propertyDefinitions),
@@ -77,6 +98,19 @@ const Field = () => {
   const editingEntryIndex = entries.findIndex((e) => e.id === editingEntryId);
   const editingEntry = entries[editingEntryIndex];
 
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over?.id && active.id !== over.id) {
+      setEntries((entries) => {
+        const oldIndex = entries.findIndex((e) => e.id === active.id);
+        const newIndex = entries.findIndex((e) => e.id === over.id);
+
+        return arrayMove(entries, oldIndex, newIndex);
+      });
+    }
+  }, []);
+
   return (
     <Stack flexDirection="column" spacing="spacingS" alignItems="flex-start">
       {getIsFormInvalid(entries) && (
@@ -87,15 +121,26 @@ const Field = () => {
       )}
 
       <EntityProvider sdk={sdk}>
-        {entries.map((entry, index) => (
-          <FieldEntry
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            index={index}
-            entry={entry}
-            key={entry.id}
-          />
-        ))}
+        <DndContext
+          onDragEnd={handleDragEnd}
+          sensors={sensors}
+          collisionDetection={closestCenter}
+        >
+          <SortableContext
+            items={entries}
+            strategy={verticalListSortingStrategy}
+          >
+            {entries.map((entry, index) => (
+              <FieldEntry
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                index={index}
+                entry={entry}
+                key={entry.id}
+              />
+            ))}
+          </SortableContext>
+        </DndContext>
       </EntityProvider>
 
       <Button startIcon={<PlusIcon />} onClick={handleAddNew} size="small">
@@ -103,7 +148,11 @@ const Field = () => {
       </Button>
 
       <div
-        style={{ borderTop: "1px solid #eee", marginTop: 20, marginBottom: 40 }}
+        style={{
+          borderTop: "1px solid #eee",
+          marginTop: 20,
+          marginBottom: 40,
+        }}
       />
 
       {editingEntry && (

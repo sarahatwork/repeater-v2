@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import {
   Badge,
+  DragHandle,
   EntryCard,
   MenuItem,
   MenuSectionTitle,
@@ -13,6 +14,8 @@ import {
   getIsEntryInvalid,
 } from "../../lib/propertyUtils";
 import { useEntity } from "@contentful/field-editor-reference";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface IProps {
   onDelete: (id: string) => void;
@@ -22,6 +25,20 @@ interface IProps {
 }
 
 const FieldEntry: React.FC<IProps> = ({ index, entry, onDelete, onEdit }) => {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: entry.id });
+  const style = transform
+    ? {
+        transform: CSS.Transform.toString({
+          x: transform.x,
+          y: transform.y,
+          scaleX: 1,
+          scaleY: 1,
+        }),
+        transition,
+        zIndex: 100,
+      }
+    : undefined;
   const handleDelete = useCallback(() => {
     onDelete(entry.id);
   }, [onDelete, entry.id]);
@@ -30,14 +47,16 @@ const FieldEntry: React.FC<IProps> = ({ index, entry, onDelete, onEdit }) => {
     onEdit(entry.id);
   }, [onEdit, entry.id]);
 
-  console.log(getEntryThumbnail(entry));
-
   const asset = useEntity("Asset", getEntryThumbnail(entry)).data?.fields
     ?.file?.["en-US"]?.url;
 
   return (
     <EntryCard
+      ref={setNodeRef}
       contentType={"Entry"}
+      dragHandleRender={() => <DragHandle label="Drag" {...listeners} />}
+      {...attributes}
+      style={style}
       withDragHandle
       onClick={handleEdit}
       actions={[
