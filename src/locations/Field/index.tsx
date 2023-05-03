@@ -11,17 +11,22 @@ import {
   parseSdkEntries,
   stringifyEntriesForSdk,
 } from "../../lib/propertyUtils";
+import FieldEntryForm from "./FieldEntryForm";
+import { EntityProvider } from "@contentful/field-editor-reference";
+import { PlusIcon } from "@contentful/f36-icons";
 
 const Field = () => {
   const sdk = useSDK<FieldAppSDK>();
-  const [entries, setEntries] = useState<IEntry[]>(
-    parseSdkEntries(sdk.field.getValue())
-  );
+  const initialEntries = parseSdkEntries(sdk.field.getValue());
+  const [entries, setEntries] = useState<IEntry[]>(initialEntries);
+  const [editingEntryId, setEditingEntryId] = useState<string>();
 
   const propertyDefinitions = useMemo(
     () => parsePropertyDefinitions(sdk.parameters.instance.propertyDefinitions),
     [sdk.parameters.instance.propertyDefinitions]
   );
+
+  sdk.window.startAutoResizer();
 
   const handleUpdate = useCallback(
     (entryIndex: number, propertyIndex: number, value: string) => {
@@ -45,18 +50,19 @@ const Field = () => {
   }, []);
 
   const handleAddNew = useCallback(() => {
+    const id = uuid();
     const newEntry = {
-      id: uuid(),
+      id,
       properties: propertyDefinitions.map((definition) => ({
         ...definition,
         value: "",
       })),
     };
     setEntries((e) => [...e, newEntry]);
+    setEditingEntryId(id);
   }, [propertyDefinitions]);
 
   useEffect(() => {
-    setTimeout(() => sdk.window.updateHeight(), 0);
     const isInvalid = getIsFormInvalid(entries);
     if (!isInvalid) {
       sdk.field.setValue(stringifyEntriesForSdk(entries));
@@ -64,31 +70,52 @@ const Field = () => {
     sdk.field.setInvalid(isInvalid);
   }, [sdk, entries]);
 
-  return (
-    <div>
-      <Stack flexDirection="column" spacing="spacingS" alignItems="stretch">
-        {getIsFormInvalid(entries) && (
-          <Note variant="negative">
-            One or more fields is currently invalid. Until all fields are valid,
-            no changes will be saved.
-          </Note>
-        )}
+  const handleEdit = useCallback((id: string) => {
+    setEditingEntryId((currentId) => (currentId === id ? undefined : id));
+  }, []);
 
+  const editingEntryIndex = entries.findIndex((e) => e.id === editingEntryId);
+  const editingEntry = entries[editingEntryIndex];
+
+  return (
+    <Stack flexDirection="column" spacing="spacingS" alignItems="flex-start">
+      {getIsFormInvalid(entries) && (
+        <Note variant="negative">
+          One or more entries is currently invalid. Until all fields are valid,
+          no changes will be saved.
+        </Note>
+      )}
+
+      <EntityProvider sdk={sdk}>
         {entries.map((entry, index) => (
           <FieldEntry
+            onEdit={handleEdit}
             onDelete={handleDelete}
-            onUpdate={handleUpdate}
             index={index}
             entry={entry}
             key={entry.id}
           />
         ))}
+      </EntityProvider>
 
-        <Button variant="primary" onClick={handleAddNew}>
-          Add New
-        </Button>
-      </Stack>
-    </div>
+      <Button startIcon={<PlusIcon />} onClick={handleAddNew} size="small">
+        Add new entry
+      </Button>
+
+      <div
+        style={{ borderTop: "1px solid #eee", marginTop: 20, marginBottom: 40 }}
+      />
+
+      {editingEntry && (
+        <FieldEntryForm
+          onDelete={handleDelete}
+          onUpdate={handleUpdate}
+          index={editingEntryIndex}
+          entry={editingEntry}
+          key={editingEntryId}
+        />
+      )}
+    </Stack>
   );
 };
 

@@ -64,10 +64,18 @@ export const getValidationMessage = (
 };
 
 export const getIsFormInvalid = (entries: IEntry[]) => {
-  return entries.some((entry) =>
-    entry.properties.some((property) => getValidationMessage(property))
-  );
+  return entries.some(getIsEntryInvalid);
 };
+
+export const getIsEntryInvalid = (entry: IEntry) =>
+  entry.properties.some((property) => getValidationMessage(property));
+
+export const getEntryTitle = (entry: IEntry, index: number) =>
+  entry.properties.find((p) => p.type === "text")?.value ||
+  `Entry ${index + 1}`;
+
+export const getEntryThumbnail = (entry: IEntry) =>
+  entry.properties.find((p) => p.type === "media" && !!p.value)?.value.sys.id;
 
 const getReferences = (node: TRichTextNode): TReference[] => {
   const references: TReference[] = [];
