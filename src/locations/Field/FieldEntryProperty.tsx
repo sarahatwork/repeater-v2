@@ -3,7 +3,7 @@ import {
   createFakeLocalesAPI,
 } from "@contentful/field-editor-test-utils";
 import { SingleLineEditor } from "@contentful/field-editor-single-line";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { SingleMediaEditor } from "@contentful/field-editor-reference";
 import { FieldAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
@@ -23,15 +23,13 @@ const FieldEntryProperty: React.FC<IProps> = ({
   property,
   onUpdate,
 }) => {
-  const [field, mitt] = createFakeFieldAPI();
+  const [field, mitt] = createFakeFieldAPI((f) => ({
+    ...f,
+    getValue: () => property.value,
+  }));
   const locales = createFakeLocalesAPI();
   const sdk = useSDK<FieldAppSDK>();
   const validationMessage = getValidationMessage(property);
-
-  useEffect(() => {
-    field.setValue(property.value);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   mitt.on("setValue", (value) => onUpdate(index, value));
   mitt.on("removeValue", () => onUpdate(index, ""));
