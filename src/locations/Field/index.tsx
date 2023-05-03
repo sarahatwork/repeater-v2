@@ -2,7 +2,7 @@ import { FieldAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import FieldEntry from "./FieldEntry";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Button, Stack } from "@contentful/f36-components";
+import { Button, Note, Stack } from "@contentful/f36-components";
 import { v4 as uuid } from "uuid";
 import { IEntry } from "../../lib/types";
 import {
@@ -67,6 +67,13 @@ const Field = () => {
   return (
     <div>
       <Stack flexDirection="column" spacing="spacingS" alignItems="stretch">
+        {getIsFormInvalid(entries) && (
+          <Note variant="negative">
+            One or more fields is currently invalid. Until all fields are valid,
+            no changes will be saved.
+          </Note>
+        )}
+
         {entries.map((entry, index) => (
           <FieldEntry
             onDelete={handleDelete}

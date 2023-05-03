@@ -3,7 +3,7 @@ import {
   createFakeLocalesAPI,
 } from "@contentful/field-editor-test-utils";
 import { SingleLineEditor } from "@contentful/field-editor-single-line";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { SingleMediaEditor } from "@contentful/field-editor-reference";
 import { FieldAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
@@ -33,9 +33,12 @@ const FieldEntryProperty: React.FC<IProps> = ({
   const locales = createFakeLocalesAPI();
   const sdk = useSDK<FieldAppSDK>();
   const validationMessage = getValidationMessage(property);
+  const [isDirty, setIsDirty] = useState(false);
 
   const handleUpdate = useCallback(
     (_value: any) => {
+      setIsDirty(true);
+
       if (property.type === "richText") {
         onUpdate(
           index,
@@ -69,12 +72,14 @@ const FieldEntryProperty: React.FC<IProps> = ({
         );
       case "media":
         return (
-          <SingleMediaEditor
-            isInitiallyDisabled={false}
-            sdk={{ ...sdk, field }}
-            viewType="card"
-            parameters={{ instance: {} }}
-          />
+          <div>
+            <SingleMediaEditor
+              isInitiallyDisabled={false}
+              sdk={{ ...sdk, field }}
+              viewType="card"
+              parameters={{ instance: {} }}
+            />
+          </div>
         );
       default:
         return null;
@@ -88,7 +93,7 @@ const FieldEntryProperty: React.FC<IProps> = ({
       {property.isRequired && (
         <FormControl.HelpText>Required</FormControl.HelpText>
       )}
-      {validationMessage && (
+      {isDirty && validationMessage && (
         <FormControl.ValidationMessage>
           {validationMessage}
         </FormControl.ValidationMessage>
