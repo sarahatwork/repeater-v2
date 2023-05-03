@@ -4,6 +4,9 @@ import {
   IPropertyDefinition,
   ISdkEntry,
   PropertyTypeSchema,
+  TReference,
+  TRichTextNode,
+  TRichTextNodeWithReferences,
 } from "./types";
 import camelCase from "lodash/camelCase";
 
@@ -64,4 +67,34 @@ export const getIsFormValid = (entries: IEntry[]) => {
   return entries.some((entry) =>
     entry.properties.some((property) => getValidationMessage(property))
   );
+};
+
+const getReferences = (node: TRichTextNode): TReference[] => {
+  const references: TReference[] = [];
+
+  if ("target" in node.data && node.data.target.sys.type === "Link") {
+    references.push({
+      contentful_id: node.data.target.sys.id,
+      type: node.data.target.sys.linkType,
+    });
+  }
+
+  if ("content" in node) {
+    node.content.forEach((childNode) => {
+      references.push(...getReferences(childNode));
+    });
+  }
+
+  return references;
+};
+
+export const addReferencesNodeToRichTextValue = (
+  value?: TRichTextNode
+): TRichTextNodeWithReferences | undefined => {
+  if (!value) return undefined;
+
+  return {
+    ...value,
+    references: getReferences(value),
+  };
 };

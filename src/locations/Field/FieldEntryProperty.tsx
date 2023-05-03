@@ -3,19 +3,22 @@ import {
   createFakeLocalesAPI,
 } from "@contentful/field-editor-test-utils";
 import { SingleLineEditor } from "@contentful/field-editor-single-line";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { SingleMediaEditor } from "@contentful/field-editor-reference";
 import { FieldAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
-import { IEntryProperty } from "../../lib/types";
+import { IEntryProperty, TRichTextNode } from "../../lib/types";
 import { FormControl } from "@contentful/f36-components";
-import { getValidationMessage } from "../../lib/propertyUtils";
+import {
+  addReferencesNodeToRichTextValue,
+  getValidationMessage,
+} from "../../lib/propertyUtils";
 import { RichTextEditor } from "@contentful/field-editor-rich-text";
 
 interface IProps {
   property: IEntryProperty;
   index: number;
-  onUpdate: (index: number, value: string) => void;
+  onUpdate: (index: number, value: any) => void;
 }
 
 const FieldEntryProperty: React.FC<IProps> = ({
@@ -31,8 +34,23 @@ const FieldEntryProperty: React.FC<IProps> = ({
   const sdk = useSDK<FieldAppSDK>();
   const validationMessage = getValidationMessage(property);
 
-  mitt.on("setValue", (value) => onUpdate(index, value));
-  mitt.on("removeValue", () => onUpdate(index, ""));
+  const handleUpdate = useCallback(
+    (_value: any) => {
+      if (property.type === "richText") {
+        onUpdate(
+          index,
+          addReferencesNodeToRichTextValue(_value as TRichTextNode)
+        );
+        return;
+      }
+
+      onUpdate(index, _value);
+    },
+    [onUpdate, index, property.type]
+  );
+
+  mitt.on("setValue", (value) => handleUpdate(value));
+  mitt.on("removeValue", () => handleUpdate(""));
 
   const body = useMemo(() => {
     switch (property.type) {

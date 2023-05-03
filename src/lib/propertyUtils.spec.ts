@@ -1,4 +1,7 @@
-import { parsePropertyDefinitions } from "./propertyUtils";
+import {
+  addReferencesNodeToRichTextValue,
+  parsePropertyDefinitions,
+} from "./propertyUtils";
 
 describe("parsePropertyDefinitions", () => {
   it("works", () => {
@@ -41,12 +44,66 @@ describe("parsePropertyDefinitions", () => {
     \\"code\\": \\"invalid_enum_value\\",
     \\"options\\": [
       \\"text\\",
-      \\"media\\"
+      \\"media\\",
+      \\"richText\\"
     ],
     \\"path\\": [],
-    \\"message\\": \\"Invalid enum value. Expected 'text' | 'media', received 'banana'\\"
+    \\"message\\": \\"Invalid enum value. Expected 'text' | 'media' | 'richText', received 'banana'\\"
   }
 ]"
 `);
+  });
+});
+
+describe("addReferencesNodeToRichTextValue", () => {
+  const testData = {
+    nodeType: `paragraph`,
+    content: [
+      {
+        nodeType: `text`,
+        value: `Inline Link: `,
+        data: {},
+      },
+      {
+        nodeType: `embedded-entry-inline`,
+        content: [],
+        data: {
+          target: {
+            sys: {
+              id: `456`,
+              type: `Link`,
+              linkType: `Entry`,
+            },
+          },
+        },
+      },
+      {
+        nodeType: `text`,
+        value: ``,
+        data: {},
+      },
+    ],
+    data: {
+      target: {
+        sys: {
+          id: `123`,
+          type: `Link`,
+          linkType: `Asset`,
+        },
+      },
+    },
+  };
+  expect(addReferencesNodeToRichTextValue(testData)).toEqual({
+    ...testData,
+    references: [
+      {
+        contentful_id: "123",
+        type: "Asset",
+      },
+      {
+        contentful_id: "456",
+        type: "Entry",
+      },
+    ],
   });
 });

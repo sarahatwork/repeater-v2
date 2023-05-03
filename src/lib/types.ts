@@ -28,3 +28,16 @@ export interface ISdkEntry {
 export interface ISdkEntryProperty extends IPropertyDefinition {
   data: string;
 }
+
+export type TReference = { contentful_id: string; type: string };
+
+export type TRichTextNode = {
+  nodeType: string;
+  data:
+    | {}
+    | { target: { sys: { id: string; type: "Link"; linkType: string } } };
+} & ({ content: TRichTextNode[] } | { value: string });
+
+export type TRichTextNodeWithReferences = TRichTextNode & {
+  references: TReference[];
+};
