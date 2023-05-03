@@ -6,7 +6,7 @@ import { Button, Stack } from "@contentful/f36-components";
 import { v4 as uuid } from "uuid";
 import { IEntry } from "../../lib/types";
 import {
-  getIsFormValid,
+  getIsFormInvalid,
   parsePropertyDefinitions,
   parseSdkEntries,
   stringifyEntriesForSdk,
@@ -57,8 +57,11 @@ const Field = () => {
 
   useEffect(() => {
     setTimeout(() => sdk.window.updateHeight(), 0);
-    sdk.field.setValue(stringifyEntriesForSdk(entries));
-    sdk.field.setInvalid(getIsFormValid(entries));
+    const isInvalid = getIsFormInvalid(entries);
+    if (!isInvalid) {
+      sdk.field.setValue(stringifyEntriesForSdk(entries));
+    }
+    sdk.field.setInvalid(isInvalid);
   }, [sdk, entries]);
 
   return (

@@ -63,7 +63,7 @@ export const getValidationMessage = (
   return null;
 };
 
-export const getIsFormValid = (entries: IEntry[]) => {
+export const getIsFormInvalid = (entries: IEntry[]) => {
   return entries.some((entry) =>
     entry.properties.some((property) => getValidationMessage(property))
   );
