@@ -1,17 +1,17 @@
 import { FieldAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
-import FieldEntry from "./FieldEntry";
+import Block from "./Block";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button, Note, Stack } from "@contentful/f36-components";
 import { v4 as uuid } from "uuid";
-import { IEntry } from "../../lib/types";
+import { IBlock } from "../../lib/types";
 import {
   getIsFormInvalid,
-  parsePropertyDefinitions,
+  parseBlockFieldDefinitions,
   parseSdkEntries,
   stringifyEntriesForSdk,
-} from "../../lib/propertyUtils";
-import FieldEntryForm from "./FieldEntryForm";
+} from "../../lib/utils";
+import BlockForm from "./BlockForm";
 import { EntityProvider } from "@contentful/field-editor-reference";
 import { PlusIcon } from "@contentful/f36-icons";
 import {
@@ -33,8 +33,8 @@ import {
 const Field = () => {
   const sdk = useSDK<FieldAppSDK>();
   const initialEntries = parseSdkEntries(sdk.field.getValue());
-  const [entries, setEntries] = useState<IEntry[]>(initialEntries);
-  const [editingEntryId, setEditingEntryId] = useState<string>();
+  const [entries, setEntries] = useState<IBlock[]>(initialEntries);
+  const [editingBlockId, setEditingBlockId] = useState<string>();
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -42,21 +42,22 @@ const Field = () => {
     })
   );
 
-  const propertyDefinitions = useMemo(
-    () => parsePropertyDefinitions(sdk.parameters.instance.propertyDefinitions),
-    [sdk.parameters.instance.propertyDefinitions]
+  const blockFieldDefinitions = useMemo(
+    () =>
+      parseBlockFieldDefinitions(sdk.parameters.instance.blockFieldDefinitions),
+    [sdk.parameters.instance.blockFieldDefinitions]
   );
 
   sdk.window.startAutoResizer();
 
   const handleUpdate = useCallback(
-    (entryIndex: number, propertyIndex: number, value: string) => {
-      const property = entries[entryIndex].properties[propertyIndex];
-      if (property.value === value) return;
+    (blockIndex: number, blockFieldIndex: number, value: string) => {
+      const blockField = entries[blockIndex].properties[blockFieldIndex];
+      if (blockField.value === value) return;
 
       setEntries((e) => {
         const newEntries = [...e];
-        newEntries[entryIndex].properties[propertyIndex].value = value;
+        newEntries[blockIndex].properties[blockFieldIndex].value = value;
         return newEntries;
       });
     },
@@ -65,23 +66,23 @@ const Field = () => {
 
   const handleDelete = useCallback((id: string) => {
     setEntries((e) => {
-      const newEntries = e.filter((entry) => entry.id !== id);
+      const newEntries = e.filter((block) => block.id !== id);
       return newEntries;
     });
   }, []);
 
   const handleAddNew = useCallback(() => {
     const id = uuid();
-    const newEntry = {
+    const newBlock = {
       id,
-      properties: propertyDefinitions.map((definition) => ({
+      properties: blockFieldDefinitions.map((definition) => ({
         ...definition,
         value: null,
       })),
     };
-    setEntries((e) => [...e, newEntry]);
-    setEditingEntryId(id);
-  }, [propertyDefinitions]);
+    setEntries((e) => [...e, newBlock]);
+    setEditingBlockId(id);
+  }, [blockFieldDefinitions]);
 
   useEffect(() => {
     const isInvalid = getIsFormInvalid(entries);
@@ -92,15 +93,15 @@ const Field = () => {
   }, [sdk, entries]);
 
   const handleEdit = useCallback((id: string) => {
-    setEditingEntryId(id);
+    setEditingBlockId(id);
   }, []);
 
   const handleBack = useCallback(() => {
-    setEditingEntryId(undefined);
+    setEditingBlockId(undefined);
   }, []);
 
-  const editingEntryIndex = entries.findIndex((e) => e.id === editingEntryId);
-  const editingEntry = entries[editingEntryIndex];
+  const editingBlockIndex = entries.findIndex((e) => e.id === editingBlockId);
+  const editingBlock = entries[editingBlockIndex];
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
@@ -117,17 +118,17 @@ const Field = () => {
 
   return (
     <>
-      {editingEntry && (
-        <FieldEntryForm
+      {editingBlock && (
+        <BlockForm
           onDelete={handleDelete}
           onBack={handleBack}
           onUpdate={handleUpdate}
-          index={editingEntryIndex}
-          entry={editingEntry}
-          key={editingEntryId}
+          index={editingBlockIndex}
+          block={editingBlock}
+          key={editingBlockId}
         />
       )}
-      <div hidden={!!editingEntry}>
+      <div hidden={!!editingBlock}>
         <Stack
           flexDirection="column"
           spacing="spacingS"
@@ -150,13 +151,13 @@ const Field = () => {
                 items={entries}
                 strategy={verticalListSortingStrategy}
               >
-                {entries.map((entry, index) => (
-                  <FieldEntry
+                {entries.map((block, index) => (
+                  <Block
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                     index={index}
-                    entry={entry}
-                    key={entry.id}
+                    block={block}
+                    key={block.id}
                   />
                 ))}
               </SortableContext>
@@ -164,7 +165,7 @@ const Field = () => {
           </EntityProvider>
 
           <Button startIcon={<PlusIcon />} onClick={handleAddNew} size="small">
-            Add new entry
+            Add new block
           </Button>
         </Stack>
       </div>

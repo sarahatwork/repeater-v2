@@ -16,9 +16,9 @@ const run = async () => {
   appDefinition.parameters = {
     instance: [
       {
-        id: "propertyDefinitions",
+        id: "blockFieldDefinitions",
         type: "Symbol",
-        name: "Property Definitions",
+        name: "BlockField Definitions",
         default: "text",
         required: true,
       },

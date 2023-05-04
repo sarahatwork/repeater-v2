@@ -7,12 +7,12 @@ import {
   MenuSectionTitle,
   Stack,
 } from "@contentful/f36-components";
-import { IEntry } from "../../lib/types";
+import { IBlock } from "../../lib/types";
 import {
-  getEntryThumbnail,
-  getEntryTitle,
-  getIsEntryInvalid,
-} from "../../lib/propertyUtils";
+  getBlockThumbnail,
+  getBlockTitle,
+  getIsBlockInvalid,
+} from "../../lib/utils";
 import { useEntity } from "@contentful/field-editor-reference";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -20,13 +20,13 @@ import { CSS } from "@dnd-kit/utilities";
 interface IProps {
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
-  entry: IEntry;
+  block: IBlock;
   index: number;
 }
 
-const FieldEntry: React.FC<IProps> = ({ index, entry, onDelete, onEdit }) => {
+const Block: React.FC<IProps> = ({ index, block, onDelete, onEdit }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: entry.id });
+    useSortable({ id: block.id });
   const style = transform
     ? {
         transform: CSS.Transform.toString({
@@ -40,20 +40,20 @@ const FieldEntry: React.FC<IProps> = ({ index, entry, onDelete, onEdit }) => {
       }
     : undefined;
   const handleDelete = useCallback(() => {
-    onDelete(entry.id);
-  }, [onDelete, entry.id]);
+    onDelete(block.id);
+  }, [onDelete, block.id]);
 
   const handleEdit = useCallback(() => {
-    onEdit(entry.id);
-  }, [onEdit, entry.id]);
+    onEdit(block.id);
+  }, [onEdit, block.id]);
 
-  const asset = useEntity("Asset", getEntryThumbnail(entry)).data?.fields
+  const asset = useEntity("Asset", getBlockThumbnail(block)).data?.fields
     ?.file?.["en-US"]?.url;
 
   return (
     <EntryCard
       ref={setNodeRef}
-      contentType={"Entry"}
+      contentType={"Block"}
       dragHandleRender={() => <DragHandle label="Drag" {...listeners} />}
       {...attributes}
       style={style}
@@ -72,8 +72,8 @@ const FieldEntry: React.FC<IProps> = ({ index, entry, onDelete, onEdit }) => {
       <Stack alignItems="flex-start">
         {asset && <img alt="" src={asset} width={80} />}
         <Stack flexDirection="column" alignItems="flex-start">
-          <b>{getEntryTitle(entry, index)}</b>
-          {getIsEntryInvalid(entry) && (
+          <b>{getBlockTitle(block, index)}</b>
+          {getIsBlockInvalid(block) && (
             <Badge variant="negative">Invalid</Badge>
           )}
         </Stack>
@@ -82,4 +82,4 @@ const FieldEntry: React.FC<IProps> = ({ index, entry, onDelete, onEdit }) => {
   );
 };
 
-export default FieldEntry;
+export default Block;

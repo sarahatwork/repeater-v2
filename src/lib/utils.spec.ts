@@ -1,12 +1,12 @@
 import {
   addReferencesNodeToRichTextValue,
-  parsePropertyDefinitions,
-} from "./propertyUtils";
+  parseBlockFieldDefinitions,
+} from "./utils";
 
-describe("parsePropertyDefinitions", () => {
+describe("parseBlockFieldDefinitions", () => {
   it("works", () => {
     expect(
-      parsePropertyDefinitions("Title:text!,Featured Image:media")
+      parseBlockFieldDefinitions("Title:text!,Featured Image:media")
     ).toEqual([
       {
         label: "Title",
@@ -25,7 +25,7 @@ describe("parsePropertyDefinitions", () => {
 
   it("supports dropdowns", () => {
     expect(
-      parsePropertyDefinitions(
+      parseBlockFieldDefinitions(
         "Optional Dropdown:dropdown-Twitter-Instagram-Pet Finder,Required Dropdown:dropdown-Twitter-Instagram-Pet Finder!"
       )
     ).toEqual([
@@ -48,25 +48,26 @@ describe("parsePropertyDefinitions", () => {
 
   it("throws error on invalid definition format", () => {
     expect(() =>
-      parsePropertyDefinitions("Titletext!,Featured Image:media")
-    ).toThrowError("Invalid property definition: Titletext!");
+      parseBlockFieldDefinitions("Titletext!,Featured Image:media")
+    ).toThrowError("Invalid blockField definition: Titletext!");
   });
 
   it("throw error on invalid dropdown", () => {
-    expect(() => parsePropertyDefinitions("Network:dropdown")).toThrowError(
+    expect(() => parseBlockFieldDefinitions("Network:dropdown")).toThrowError(
       "Missing options for dropdown definition: Network:dropdown"
     );
   });
 
   it("throws error on undefined input", () => {
-    expect(() => parsePropertyDefinitions()).toThrowError(
-      "Property definition input is undefined"
+    expect(() => parseBlockFieldDefinitions()).toThrowError(
+      "BlockField definition input is undefined"
     );
   });
 
   it("throws error on invalid type", () => {
-    expect(() => parsePropertyDefinitions("Title:banana!,Featured Image:media"))
-      .toThrowErrorMatchingInlineSnapshot(`
+    expect(() =>
+      parseBlockFieldDefinitions("Title:banana!,Featured Image:media")
+    ).toThrowErrorMatchingInlineSnapshot(`
 "[
   {
     \\"received\\": \\"banana\\",

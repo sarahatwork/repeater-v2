@@ -1,42 +1,46 @@
 import { useCallback } from "react";
-import FieldEntryProperty from "./FieldEntryProperty";
+import BlockFormField from "./BlockFormField";
 import { Box, Button } from "@contentful/f36-components";
-import { IEntry } from "../../lib/types";
-import { getEntryTitle } from "../../lib/propertyUtils";
+import { IBlock } from "../../lib/types";
+import { getBlockTitle } from "../../lib/utils";
 import { WorkbenchHeader } from "@contentful/f36-workbench";
 
 interface IProps {
   onDelete: (id: string) => void;
   onBack: () => void;
-  onUpdate: (entryIndex: number, propertyIndex: number, value: string) => void;
-  entry: IEntry;
+  onUpdate: (
+    blockIndex: number,
+    blockFieldIndex: number,
+    value: string
+  ) => void;
+  block: IBlock;
   index: number;
 }
 
-const FieldEntryForm: React.FC<IProps> = ({
+const BlockForm: React.FC<IProps> = ({
   index,
-  entry,
+  block,
   onBack,
   onUpdate,
   onDelete,
 }) => {
   const handleUpdate = useCallback(
-    (propertyIndex: number, value: string) => {
-      onUpdate(index, propertyIndex, value);
+    (blockFieldIndex: number, value: string) => {
+      onUpdate(index, blockFieldIndex, value);
     },
     [onUpdate, index]
   );
 
   const handleDelete = useCallback(() => {
-    onDelete(entry.id);
-  }, [onDelete, entry.id]);
+    onDelete(block.id);
+  }, [onDelete, block.id]);
 
   return (
     <>
       <Box marginTop="spacingM" marginBottom="spacingL">
         <WorkbenchHeader
           onBack={onBack}
-          title={getEntryTitle(entry, index)}
+          title={getBlockTitle(block, index)}
           actions={
             <Button size="small" onClick={handleDelete}>
               Delete
@@ -45,12 +49,12 @@ const FieldEntryForm: React.FC<IProps> = ({
         />
       </Box>
 
-      {entry.properties.map((property, i) => {
+      {block.properties.map((blockField, i) => {
         return (
-          <FieldEntryProperty
-            property={property}
+          <BlockFormField
+            blockField={blockField}
             onUpdate={handleUpdate}
-            key={property.name}
+            key={blockField.name}
             index={i}
           />
         );
@@ -59,4 +63,4 @@ const FieldEntryForm: React.FC<IProps> = ({
   );
 };
 
-export default FieldEntryForm;
+export default BlockForm;

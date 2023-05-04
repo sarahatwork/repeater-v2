@@ -7,44 +7,42 @@ import { useCallback, useMemo, useState } from "react";
 import { SingleMediaEditor } from "@contentful/field-editor-reference";
 import { FieldAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
-import { IEntryProperty, TRichTextNode } from "../../lib/types";
+import { IBlockField, TRichTextNode } from "../../lib/types";
 import { FormControl } from "@contentful/f36-components";
 import {
   addReferencesNodeToRichTextValue,
   getValidationMessage,
-} from "../../lib/propertyUtils";
+} from "../../lib/utils";
 import { RichTextEditor } from "@contentful/field-editor-rich-text";
 import { BooleanEditor } from "@contentful/field-editor-boolean";
 import { DropdownEditor } from "@contentful/field-editor-dropdown";
 
 interface IProps {
-  property: IEntryProperty;
+  blockField: IBlockField;
   index: number;
   onUpdate: (index: number, value: any) => void;
 }
 
-const FieldEntryProperty: React.FC<IProps> = ({
-  index,
-  property,
-  onUpdate,
-}) => {
-  console.log(property);
+const BlockFormField: React.FC<IProps> = ({ index, blockField, onUpdate }) => {
+  console.log(blockField);
   const [field, mitt] = createFakeFieldAPI((f) => ({
     ...f,
-    getValue: () => property.value,
+    getValue: () => blockField.value,
     validations:
-      property.type === "dropdown" ? [{ in: property.options }] : f.validations,
+      blockField.type === "dropdown"
+        ? [{ in: blockField.options }]
+        : f.validations,
   }));
   const locales = createFakeLocalesAPI();
   const sdk = useSDK<FieldAppSDK>();
-  const validationMessage = getValidationMessage(property);
+  const validationMessage = getValidationMessage(blockField);
   const [isDirty, setIsDirty] = useState(false);
 
   const handleUpdate = useCallback(
     (_value: any) => {
       setIsDirty(true);
 
-      if (property.type === "richText") {
+      if (blockField.type === "richText") {
         onUpdate(
           index,
           addReferencesNodeToRichTextValue(_value as TRichTextNode)
@@ -54,14 +52,14 @@ const FieldEntryProperty: React.FC<IProps> = ({
 
       onUpdate(index, _value);
     },
-    [onUpdate, index, property.type]
+    [onUpdate, index, blockField.type]
   );
 
   mitt.on("setValue", (value) => handleUpdate(value));
   mitt.on("removeValue", () => handleUpdate(null));
 
   const body = useMemo(() => {
-    switch (property.type) {
+    switch (blockField.type) {
       case "dropdown":
         return (
           <DropdownEditor
@@ -99,13 +97,13 @@ const FieldEntryProperty: React.FC<IProps> = ({
       default:
         return null;
     }
-  }, [field, locales, sdk, property.type]);
+  }, [field, locales, sdk, blockField.type]);
 
   return (
     <FormControl>
-      <FormControl.Label>{property.label}</FormControl.Label>
+      <FormControl.Label>{blockField.label}</FormControl.Label>
       {body}
-      {property.isRequired && (
+      {blockField.isRequired && (
         <FormControl.HelpText>Required</FormControl.HelpText>
       )}
       {isDirty && validationMessage && (
@@ -117,4 +115,4 @@ const FieldEntryProperty: React.FC<IProps> = ({
   );
 };
 
-export default FieldEntryProperty;
+export default BlockFormField;

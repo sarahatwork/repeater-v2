@@ -1,32 +1,32 @@
 import { z } from "zod";
-import { PropertyTypes } from "./constants";
+import { BlockFieldTypes } from "./constants";
 
-export const PropertyTypeSchema = z.nativeEnum(PropertyTypes);
-export type TPropertyType = z.infer<typeof PropertyTypeSchema>;
+export const BlockFieldTypeSchema = z.nativeEnum(BlockFieldTypes);
+export type TBlockFieldType = z.infer<typeof BlockFieldTypeSchema>;
 
-export interface IPropertyDefinition {
+export interface IBlockFieldDefinition {
   label: string;
   name: string;
-  type: TPropertyType;
+  type: TBlockFieldType;
   isRequired: boolean;
   options?: string[];
 }
 
-export interface IEntry {
+export interface IBlock {
   id: string;
-  properties: IEntryProperty[];
+  properties: IBlockField[];
 }
 
-export interface IEntryProperty extends IPropertyDefinition {
+export interface IBlockField extends IBlockFieldDefinition {
   value: any;
 }
 
-export interface ISdkEntry {
+export interface ISdkBlock {
   id: string;
-  repeaterProperties: ISdkEntryProperty[];
+  repeaterProperties: ISdkBlockField[];
 }
 
-export interface ISdkEntryProperty extends IPropertyDefinition {
+export interface ISdkBlockField extends IBlockFieldDefinition {
   data: string;
 }
 
