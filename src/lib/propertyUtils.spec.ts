@@ -23,10 +23,39 @@ describe("parsePropertyDefinitions", () => {
     ]);
   });
 
+  it("supports dropdowns", () => {
+    expect(
+      parsePropertyDefinitions(
+        "Optional Dropdown:dropdown-Twitter-Instagram-Pet Finder,Required Dropdown:dropdown-Twitter-Instagram-Pet Finder!"
+      )
+    ).toEqual([
+      {
+        label: "Optional Dropdown",
+        name: "optionalDropdown",
+        type: "dropdown",
+        options: ["Twitter", "Instagram", "Pet Finder"],
+        isRequired: false,
+      },
+      {
+        label: "Required Dropdown",
+        name: "requiredDropdown",
+        type: "dropdown",
+        options: ["Twitter", "Instagram", "Pet Finder"],
+        isRequired: true,
+      },
+    ]);
+  });
+
   it("throws error on invalid definition format", () => {
     expect(() =>
       parsePropertyDefinitions("Titletext!,Featured Image:media")
     ).toThrowError("Invalid property definition: Titletext!");
+  });
+
+  it("throw error on invalid dropdown", () => {
+    expect(() => parsePropertyDefinitions("Network:dropdown")).toThrowError(
+      "Missing options for dropdown definition: Network:dropdown"
+    );
   });
 
   it("throws error on undefined input", () => {
@@ -45,10 +74,12 @@ describe("parsePropertyDefinitions", () => {
     \\"options\\": [
       \\"text\\",
       \\"media\\",
-      \\"richText\\"
+      \\"richText\\",
+      \\"boolean\\",
+      \\"dropdown\\"
     ],
     \\"path\\": [],
-    \\"message\\": \\"Invalid enum value. Expected 'text' | 'media' | 'richText', received 'banana'\\"
+    \\"message\\": \\"Invalid enum value. Expected 'text' | 'media' | 'richText' | 'boolean' | 'dropdown', received 'banana'\\"
   }
 ]"
 `);

@@ -9,6 +9,7 @@ export interface IPropertyDefinition {
   name: string;
   type: TPropertyType;
   isRequired: boolean;
+  options?: string[];
 }
 
 export interface IEntry {

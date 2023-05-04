@@ -15,6 +15,7 @@ import {
 } from "../../lib/propertyUtils";
 import { RichTextEditor } from "@contentful/field-editor-rich-text";
 import { BooleanEditor } from "@contentful/field-editor-boolean";
+import { DropdownEditor } from "@contentful/field-editor-dropdown";
 
 interface IProps {
   property: IEntryProperty;
@@ -27,9 +28,12 @@ const FieldEntryProperty: React.FC<IProps> = ({
   property,
   onUpdate,
 }) => {
+  console.log(property);
   const [field, mitt] = createFakeFieldAPI((f) => ({
     ...f,
     getValue: () => property.value,
+    validations:
+      property.type === "dropdown" ? [{ in: property.options }] : f.validations,
   }));
   const locales = createFakeLocalesAPI();
   const sdk = useSDK<FieldAppSDK>();
@@ -58,6 +62,14 @@ const FieldEntryProperty: React.FC<IProps> = ({
 
   const body = useMemo(() => {
     switch (property.type) {
+      case "dropdown":
+        return (
+          <DropdownEditor
+            field={field}
+            locales={locales}
+            isInitiallyDisabled={false}
+          />
+        );
       case "boolean":
         return <BooleanEditor field={field} isInitiallyDisabled={false} />;
       case "text":

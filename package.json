@@ -8,6 +8,7 @@
     "@contentful/f36-tokens": "4.0.1",
     "@contentful/f36-workbench": "^4.21.0",
     "@contentful/field-editor-boolean": "^1.2.0",
+    "@contentful/field-editor-dropdown": "^1.2.0",
     "@contentful/field-editor-reference": "^5.9.0",
     "@contentful/field-editor-rich-text": "^3.4.20",
     "@contentful/field-editor-single-line": "^1.2.0",

@@ -10,7 +10,8 @@ import {
 } from "./types";
 import camelCase from "lodash/camelCase";
 
-const PROPERTY_DEF_REGEX = /([\w\s]+):(\w+)(!?)/;
+const PROPERTY_DEF_REGEX =
+  /(?<label>[\w\s]+):(?<type>\w+)(?:-(?<options>[\w\s-]+))?(?<required>!?)/;
 
 export const parseSdkEntries = (sdkEntries?: ISdkEntry[]): IEntry[] =>
   sdkEntries?.map(({ repeaterProperties, ...entry }) => ({
@@ -37,17 +38,23 @@ export const parsePropertyDefinitions = (
 
   return input.split(",").map((propertyDefString) => {
     const matches = propertyDefString.match(PROPERTY_DEF_REGEX);
-    if (!matches) {
+    if (!matches?.groups) {
       throw new Error(`Invalid property definition: ${propertyDefString}`);
     }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_, label, type, requiredSymbol] = matches;
+    const { label, type, options, required } = matches.groups;
     const parsedType = PropertyTypeSchema.parse(type);
+    const parsedOptions = options?.split("-");
+    if (parsedType === "dropdown" && !parsedOptions?.length) {
+      throw new Error(
+        `Missing options for dropdown definition: ${propertyDefString}`
+      );
+    }
 
     return {
       label,
       type: parsedType,
-      isRequired: !!requiredSymbol,
+      isRequired: !!required,
+      options: parsedOptions,
       name: camelCase(label),
     };
   });
