@@ -14,6 +14,7 @@ import {
   getValidationMessage,
 } from "../../lib/propertyUtils";
 import { RichTextEditor } from "@contentful/field-editor-rich-text";
+import { BooleanEditor } from "@contentful/field-editor-boolean";
 
 interface IProps {
   property: IEntryProperty;
@@ -53,10 +54,12 @@ const FieldEntryProperty: React.FC<IProps> = ({
   );
 
   mitt.on("setValue", (value) => handleUpdate(value));
-  mitt.on("removeValue", () => handleUpdate(""));
+  mitt.on("removeValue", () => handleUpdate(null));
 
   const body = useMemo(() => {
     switch (property.type) {
+      case "boolean":
+        return <BooleanEditor field={field} isInitiallyDisabled={false} />;
       case "text":
         return (
           <SingleLineEditor

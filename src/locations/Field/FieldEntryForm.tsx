@@ -1,12 +1,6 @@
 import { useCallback } from "react";
 import FieldEntryProperty from "./FieldEntryProperty";
-import {
-  Box,
-  Button,
-  Menu,
-  MenuItem,
-  MenuSectionTitle,
-} from "@contentful/f36-components";
+import { Box, Button } from "@contentful/f36-components";
 import { IEntry } from "../../lib/types";
 import { getEntryTitle } from "../../lib/propertyUtils";
 import { WorkbenchHeader } from "@contentful/f36-workbench";

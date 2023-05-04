@@ -56,7 +56,12 @@ export const parsePropertyDefinitions = (
 export const getValidationMessage = (
   property: IEntryProperty
 ): string | null => {
-  if (property.isRequired && !property.value) {
+  if (
+    property.isRequired &&
+    (property.value === null ||
+      property.value === undefined ||
+      property.value === "")
+  ) {
     return "Field is required";
   }
 

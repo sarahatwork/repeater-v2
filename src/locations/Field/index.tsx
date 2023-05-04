@@ -76,7 +76,7 @@ const Field = () => {
       id,
       properties: propertyDefinitions.map((definition) => ({
         ...definition,
-        value: "",
+        value: null,
       })),
     };
     setEntries((e) => [...e, newEntry]);
