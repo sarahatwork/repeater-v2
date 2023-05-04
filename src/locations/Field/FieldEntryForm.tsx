@@ -1,12 +1,19 @@
 import { useCallback } from "react";
 import FieldEntryProperty from "./FieldEntryProperty";
-import { Card, IconButton } from "@contentful/f36-components";
-import { DeleteIcon } from "@contentful/f36-icons";
+import {
+  Box,
+  Button,
+  Menu,
+  MenuItem,
+  MenuSectionTitle,
+} from "@contentful/f36-components";
 import { IEntry } from "../../lib/types";
 import { getEntryTitle } from "../../lib/propertyUtils";
+import { WorkbenchHeader } from "@contentful/f36-workbench";
 
 interface IProps {
   onDelete: (id: string) => void;
+  onBack: () => void;
   onUpdate: (entryIndex: number, propertyIndex: number, value: string) => void;
   entry: IEntry;
   index: number;
@@ -15,6 +22,7 @@ interface IProps {
 const FieldEntryForm: React.FC<IProps> = ({
   index,
   entry,
+  onBack,
   onUpdate,
   onDelete,
 }) => {
@@ -30,18 +38,19 @@ const FieldEntryForm: React.FC<IProps> = ({
   }, [onDelete, entry.id]);
 
   return (
-    <Card
-      title={getEntryTitle(entry, index)}
-      icon={
-        <IconButton
-          variant="secondary"
-          aria-label="Delete"
-          onClick={handleDelete}
-          icon={<DeleteIcon />}
-          size="small"
+    <>
+      <Box marginTop="spacingM" marginBottom="spacingL">
+        <WorkbenchHeader
+          onBack={onBack}
+          title={getEntryTitle(entry, index)}
+          actions={
+            <Button size="small" onClick={handleDelete}>
+              Delete
+            </Button>
+          }
         />
-      }
-    >
+      </Box>
+
       {entry.properties.map((property, i) => {
         return (
           <FieldEntryProperty
@@ -52,7 +61,7 @@ const FieldEntryForm: React.FC<IProps> = ({
           />
         );
       })}
-    </Card>
+    </>
   );
 };
 

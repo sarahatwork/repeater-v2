@@ -92,7 +92,11 @@ const Field = () => {
   }, [sdk, entries]);
 
   const handleEdit = useCallback((id: string) => {
-    setEditingEntryId((currentId) => (currentId === id ? undefined : id));
+    setEditingEntryId(id);
+  }, []);
+
+  const handleBack = useCallback(() => {
+    setEditingEntryId(undefined);
   }, []);
 
   const editingEntryIndex = entries.findIndex((e) => e.id === editingEntryId);
@@ -112,59 +116,59 @@ const Field = () => {
   }, []);
 
   return (
-    <Stack flexDirection="column" spacing="spacingS" alignItems="flex-start">
-      {getIsFormInvalid(entries) && (
-        <Note variant="negative">
-          One or more entries is currently invalid. Until all fields are valid,
-          no changes will be saved.
-        </Note>
-      )}
-
-      <EntityProvider sdk={sdk}>
-        <DndContext
-          onDragEnd={handleDragEnd}
-          sensors={sensors}
-          collisionDetection={closestCenter}
-        >
-          <SortableContext
-            items={entries}
-            strategy={verticalListSortingStrategy}
-          >
-            {entries.map((entry, index) => (
-              <FieldEntry
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                index={index}
-                entry={entry}
-                key={entry.id}
-              />
-            ))}
-          </SortableContext>
-        </DndContext>
-      </EntityProvider>
-
-      <Button startIcon={<PlusIcon />} onClick={handleAddNew} size="small">
-        Add new entry
-      </Button>
-
-      <div
-        style={{
-          borderTop: "1px solid #eee",
-          marginTop: 20,
-          marginBottom: 40,
-        }}
-      />
-
+    <>
       {editingEntry && (
         <FieldEntryForm
           onDelete={handleDelete}
+          onBack={handleBack}
           onUpdate={handleUpdate}
           index={editingEntryIndex}
           entry={editingEntry}
           key={editingEntryId}
         />
       )}
-    </Stack>
+      <div hidden={!!editingEntry}>
+        <Stack
+          flexDirection="column"
+          spacing="spacingS"
+          alignItems="flex-start"
+        >
+          {getIsFormInvalid(entries) && (
+            <Note variant="negative">
+              One or more entries is currently invalid. Until all fields are
+              valid, no changes will be saved.
+            </Note>
+          )}
+
+          <EntityProvider sdk={sdk}>
+            <DndContext
+              onDragEnd={handleDragEnd}
+              sensors={sensors}
+              collisionDetection={closestCenter}
+            >
+              <SortableContext
+                items={entries}
+                strategy={verticalListSortingStrategy}
+              >
+                {entries.map((entry, index) => (
+                  <FieldEntry
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    index={index}
+                    entry={entry}
+                    key={entry.id}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          </EntityProvider>
+
+          <Button startIcon={<PlusIcon />} onClick={handleAddNew} size="small">
+            Add new entry
+          </Button>
+        </Stack>
+      </div>
+    </>
   );
 };
 
