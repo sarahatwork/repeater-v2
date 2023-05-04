@@ -24,14 +24,12 @@ interface IProps {
 }
 
 const BlockFormField: React.FC<IProps> = ({ index, blockField, onUpdate }) => {
-  console.log(blockField);
   const [field, mitt] = createFakeFieldAPI((f) => ({
     ...f,
     getValue: () => blockField.value,
-    validations:
-      blockField.type === "dropdown"
-        ? [{ in: blockField.options }]
-        : f.validations,
+    validations: blockField.options
+      ? [{ in: blockField.options }]
+      : f.validations,
   }));
   const locales = createFakeLocalesAPI();
   const sdk = useSDK<FieldAppSDK>();
@@ -60,17 +58,19 @@ const BlockFormField: React.FC<IProps> = ({ index, blockField, onUpdate }) => {
 
   const body = useMemo(() => {
     switch (blockField.type) {
-      case "dropdown":
-        return (
-          <DropdownEditor
-            field={field}
-            locales={locales}
-            isInitiallyDisabled={false}
-          />
-        );
       case "boolean":
         return <BooleanEditor field={field} isInitiallyDisabled={false} />;
       case "text":
+        if (blockField.options) {
+          return (
+            <DropdownEditor
+              field={field}
+              locales={locales}
+              isInitiallyDisabled={false}
+            />
+          );
+        }
+
         return (
           <SingleLineEditor
             field={field}
@@ -97,7 +97,7 @@ const BlockFormField: React.FC<IProps> = ({ index, blockField, onUpdate }) => {
       default:
         return null;
     }
-  }, [field, locales, sdk, blockField.type]);
+  }, [field, locales, sdk, blockField.type, blockField.options]);
 
   return (
     <FormControl>

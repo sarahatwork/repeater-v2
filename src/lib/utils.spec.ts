@@ -26,20 +26,20 @@ describe("parseBlockFieldDefinitions", () => {
   it("supports dropdowns", () => {
     expect(
       parseBlockFieldDefinitions(
-        "Optional Dropdown:dropdown-Twitter-Instagram-Pet Finder,Required Dropdown:dropdown-Twitter-Instagram-Pet Finder!"
+        "Optional Dropdown:text-Twitter-Instagram-Pet Finder,Required Dropdown:text-Twitter-Instagram-Pet Finder!"
       )
     ).toEqual([
       {
         label: "Optional Dropdown",
         name: "optionalDropdown",
-        type: "dropdown",
+        type: "text",
         options: ["Twitter", "Instagram", "Pet Finder"],
         isRequired: false,
       },
       {
         label: "Required Dropdown",
         name: "requiredDropdown",
-        type: "dropdown",
+        type: "text",
         options: ["Twitter", "Instagram", "Pet Finder"],
         isRequired: true,
       },
@@ -49,18 +49,12 @@ describe("parseBlockFieldDefinitions", () => {
   it("throws error on invalid definition format", () => {
     expect(() =>
       parseBlockFieldDefinitions("Titletext!,Featured Image:media")
-    ).toThrowError("Invalid blockField definition: Titletext!");
-  });
-
-  it("throw error on invalid dropdown", () => {
-    expect(() => parseBlockFieldDefinitions("Network:dropdown")).toThrowError(
-      "Missing options for dropdown definition: Network:dropdown"
-    );
+    ).toThrowError("Invalid Block Field Definitions: Titletext!");
   });
 
   it("throws error on undefined input", () => {
     expect(() => parseBlockFieldDefinitions()).toThrowError(
-      "BlockField definition input is undefined"
+      "Block Field Definitions input is undefined"
     );
   });
 
@@ -76,11 +70,10 @@ describe("parseBlockFieldDefinitions", () => {
       \\"text\\",
       \\"media\\",
       \\"richText\\",
-      \\"boolean\\",
-      \\"dropdown\\"
+      \\"boolean\\"
     ],
     \\"path\\": [],
-    \\"message\\": \\"Invalid enum value. Expected 'text' | 'media' | 'richText' | 'boolean' | 'dropdown', received 'banana'\\"
+    \\"message\\": \\"Invalid enum value. Expected 'text' | 'media' | 'richText' | 'boolean', received 'banana'\\"
   }
 ]"
 `);

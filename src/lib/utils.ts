@@ -11,21 +11,21 @@ import {
 import camelCase from "lodash/camelCase";
 
 const BLOCKFIELD_DEF_REGEX =
-  /(?<label>[\w\s]+):(?<type>\w+)(?:-(?<options>[\w\s-]+))?(?<required>!?)/;
+  /(?<label>[^:]+):(?<type>\w+)(?:-(?<options>[^!]+))?(?<required>!?)/;
 
-export const parseSdkEntries = (sdkEntries?: ISdkBlock[]): IBlock[] =>
-  sdkEntries?.map(({ repeaterProperties, ...block }) => ({
+export const parseSdkBlocks = (sdkBlocks?: ISdkBlock[]): IBlock[] =>
+  sdkBlocks?.map(({ repeaterFields, ...block }) => ({
     ...block,
-    properties: repeaterProperties.map(({ data, ...blockField }) => ({
+    fields: repeaterFields.map(({ data, ...blockField }) => ({
       ...blockField,
       value: JSON.parse(data),
     })),
   })) || [];
 
-export const stringifyEntriesForSdk = (entries: IBlock[]): ISdkBlock[] =>
-  entries.map(({ properties, ...block }) => ({
+export const stringifyBlocksForSdk = (blocks: IBlock[]): ISdkBlock[] =>
+  blocks.map(({ fields, ...block }) => ({
     ...block,
-    repeaterProperties: properties.map(({ value, ...blockField }) => ({
+    repeaterFields: fields.map(({ value, ...blockField }) => ({
       ...blockField,
       data: JSON.stringify(value),
     })),
@@ -34,21 +34,18 @@ export const stringifyEntriesForSdk = (entries: IBlock[]): ISdkBlock[] =>
 export const parseBlockFieldDefinitions = (
   input?: string
 ): IBlockFieldDefinition[] => {
-  if (!input) throw new Error("BlockField definition input is undefined");
+  if (!input) throw new Error("Block Field Definitions input is undefined");
 
   return input.split(",").map((blockFieldDefString) => {
     const matches = blockFieldDefString.match(BLOCKFIELD_DEF_REGEX);
     if (!matches?.groups) {
-      throw new Error(`Invalid blockField definition: ${blockFieldDefString}`);
+      throw new Error(
+        `Invalid Block Field Definitions: ${blockFieldDefString}`
+      );
     }
     const { label, type, options, required } = matches.groups;
     const parsedType = BlockFieldTypeSchema.parse(type);
     const parsedOptions = options?.split("-");
-    if (parsedType === "dropdown" && !parsedOptions?.length) {
-      throw new Error(
-        `Missing options for dropdown definition: ${blockFieldDefString}`
-      );
-    }
 
     return {
       label,
@@ -75,19 +72,18 @@ export const getValidationMessage = (
   return null;
 };
 
-export const getIsFormInvalid = (entries: IBlock[]) => {
-  return entries.some(getIsBlockInvalid);
+export const getIsFormInvalid = (blocks: IBlock[]) => {
+  return blocks.some(getIsBlockInvalid);
 };
 
 export const getIsBlockInvalid = (block: IBlock) =>
-  block.properties.some((blockField) => getValidationMessage(blockField));
+  block.fields.some((blockField) => getValidationMessage(blockField));
 
 export const getBlockTitle = (block: IBlock, index: number) =>
-  block.properties.find((p) => p.type === "text")?.value ||
-  `Block ${index + 1}`;
+  block.fields.find((p) => p.type === "text")?.value || `Block ${index + 1}`;
 
 export const getBlockThumbnail = (block: IBlock) =>
-  block.properties.find((p) => p.type === "media" && !!p.value)?.value.sys.id;
+  block.fields.find((p) => p.type === "media" && !!p.value)?.value.sys.id;
 
 const getReferences = (node: TRichTextNode): TReference[] => {
   const references: TReference[] = [];

@@ -3,5 +3,4 @@ export const BlockFieldTypes = {
   MEDIA: "media",
   RICH_TEXT: "richText",
   BOOLEAN: "boolean",
-  DROPDOWN: "dropdown",
 } as const;

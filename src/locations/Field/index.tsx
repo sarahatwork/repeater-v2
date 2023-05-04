@@ -8,8 +8,8 @@ import { IBlock } from "../../lib/types";
 import {
   getIsFormInvalid,
   parseBlockFieldDefinitions,
-  parseSdkEntries,
-  stringifyEntriesForSdk,
+  parseSdkBlocks,
+  stringifyBlocksForSdk,
 } from "../../lib/utils";
 import BlockForm from "./BlockForm";
 import { EntityProvider } from "@contentful/field-editor-reference";
@@ -32,8 +32,8 @@ import {
 
 const Field = () => {
   const sdk = useSDK<FieldAppSDK>();
-  const initialEntries = parseSdkEntries(sdk.field.getValue());
-  const [entries, setEntries] = useState<IBlock[]>(initialEntries);
+  const initialBlocks = parseSdkBlocks(sdk.field.getValue());
+  const [blocks, setBlocks] = useState<IBlock[]>(initialBlocks);
   const [editingBlockId, setEditingBlockId] = useState<string>();
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -52,22 +52,22 @@ const Field = () => {
 
   const handleUpdate = useCallback(
     (blockIndex: number, blockFieldIndex: number, value: string) => {
-      const blockField = entries[blockIndex].properties[blockFieldIndex];
+      const blockField = blocks[blockIndex].fields[blockFieldIndex];
       if (blockField.value === value) return;
 
-      setEntries((e) => {
-        const newEntries = [...e];
-        newEntries[blockIndex].properties[blockFieldIndex].value = value;
-        return newEntries;
+      setBlocks((e) => {
+        const newBlocks = [...e];
+        newBlocks[blockIndex].fields[blockFieldIndex].value = value;
+        return newBlocks;
       });
     },
-    [entries]
+    [blocks]
   );
 
   const handleDelete = useCallback((id: string) => {
-    setEntries((e) => {
-      const newEntries = e.filter((block) => block.id !== id);
-      return newEntries;
+    setBlocks((e) => {
+      const newBlocks = e.filter((block) => block.id !== id);
+      return newBlocks;
     });
   }, []);
 
@@ -75,22 +75,22 @@ const Field = () => {
     const id = uuid();
     const newBlock = {
       id,
-      properties: blockFieldDefinitions.map((definition) => ({
+      fields: blockFieldDefinitions.map((definition) => ({
         ...definition,
         value: null,
       })),
     };
-    setEntries((e) => [...e, newBlock]);
+    setBlocks((e) => [...e, newBlock]);
     setEditingBlockId(id);
   }, [blockFieldDefinitions]);
 
   useEffect(() => {
-    const isInvalid = getIsFormInvalid(entries);
+    const isInvalid = getIsFormInvalid(blocks);
     if (!isInvalid) {
-      sdk.field.setValue(stringifyEntriesForSdk(entries));
+      sdk.field.setValue(stringifyBlocksForSdk(blocks));
     }
     sdk.field.setInvalid(isInvalid);
-  }, [sdk, entries]);
+  }, [sdk, blocks]);
 
   const handleEdit = useCallback((id: string) => {
     setEditingBlockId(id);
@@ -100,18 +100,18 @@ const Field = () => {
     setEditingBlockId(undefined);
   }, []);
 
-  const editingBlockIndex = entries.findIndex((e) => e.id === editingBlockId);
-  const editingBlock = entries[editingBlockIndex];
+  const editingBlockIndex = blocks.findIndex((e) => e.id === editingBlockId);
+  const editingBlock = blocks[editingBlockIndex];
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
 
     if (over?.id && active.id !== over.id) {
-      setEntries((entries) => {
-        const oldIndex = entries.findIndex((e) => e.id === active.id);
-        const newIndex = entries.findIndex((e) => e.id === over.id);
+      setBlocks((blocks) => {
+        const oldIndex = blocks.findIndex((e) => e.id === active.id);
+        const newIndex = blocks.findIndex((e) => e.id === over.id);
 
-        return arrayMove(entries, oldIndex, newIndex);
+        return arrayMove(blocks, oldIndex, newIndex);
       });
     }
   }, []);
@@ -134,9 +134,9 @@ const Field = () => {
           spacing="spacingS"
           alignItems="flex-start"
         >
-          {getIsFormInvalid(entries) && (
+          {getIsFormInvalid(blocks) && (
             <Note variant="negative">
-              One or more entries is currently invalid. Until all fields are
+              One or more blocks is currently invalid. Until all fields are
               valid, no changes will be saved.
             </Note>
           )}
@@ -148,10 +148,10 @@ const Field = () => {
               collisionDetection={closestCenter}
             >
               <SortableContext
-                items={entries}
+                items={blocks}
                 strategy={verticalListSortingStrategy}
               >
-                {entries.map((block, index) => (
+                {blocks.map((block, index) => (
                   <Block
                     onEdit={handleEdit}
                     onDelete={handleDelete}

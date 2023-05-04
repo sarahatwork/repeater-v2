@@ -14,7 +14,7 @@ export interface IBlockFieldDefinition {
 
 export interface IBlock {
   id: string;
-  properties: IBlockField[];
+  fields: IBlockField[];
 }
 
 export interface IBlockField extends IBlockFieldDefinition {
@@ -23,7 +23,7 @@ export interface IBlockField extends IBlockFieldDefinition {
 
 export interface ISdkBlock {
   id: string;
-  repeaterProperties: ISdkBlockField[];
+  repeaterFields: ISdkBlockField[];
 }
 
 export interface ISdkBlockField extends IBlockFieldDefinition {

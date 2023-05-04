@@ -18,8 +18,8 @@ const run = async () => {
       {
         id: "blockFieldDefinitions",
         type: "Symbol",
-        name: "BlockField Definitions",
-        default: "text",
+        name: "Block Field Definitions",
+        default: "Title:text!",
         required: true,
       },
     ],

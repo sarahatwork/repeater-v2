@@ -49,7 +49,7 @@ const BlockForm: React.FC<IProps> = ({
         />
       </Box>
 
-      {block.properties.map((blockField, i) => {
+      {block.fields.map((blockField, i) => {
         return (
           <BlockFormField
             blockField={blockField}
