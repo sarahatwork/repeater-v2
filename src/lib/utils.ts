@@ -7,6 +7,7 @@ import {
   TReference,
   TRichTextNode,
   TRichTextNodeWithReferences,
+  ISdkBlockField,
 } from "./types";
 import camelCase from "lodash/camelCase";
 
@@ -14,9 +15,9 @@ const BLOCKFIELD_DEF_REGEX =
   /(?<label>[^:]+):(?<type>\w+)(?:-(?<options>[^!]+))?(?<required>!?)/;
 
 export const parseSdkBlocks = (sdkBlocks?: ISdkBlock[]): IBlock[] =>
-  sdkBlocks?.map(({ repeaterFields, ...block }) => ({
+  sdkBlocks?.map(({ blockFields, ...block }) => ({
     ...block,
-    fields: repeaterFields.map(({ data, ...blockField }) => ({
+    fields: Object.values(blockFields).map(({ data, ...blockField }) => ({
       ...blockField,
       value: JSON.parse(data),
     })),
@@ -25,10 +26,14 @@ export const parseSdkBlocks = (sdkBlocks?: ISdkBlock[]): IBlock[] =>
 export const stringifyBlocksForSdk = (blocks: IBlock[]): ISdkBlock[] =>
   blocks.map(({ fields, ...block }) => ({
     ...block,
-    repeaterFields: fields.map(({ value, ...blockField }) => ({
-      ...blockField,
-      data: JSON.stringify(value),
-    })),
+    // "fields" is a protected property name in Gatsby
+    blockFields: fields.reduce((acc, { value, ...blockField }) => {
+      acc[blockField.name] = {
+        ...blockField,
+        data: JSON.stringify(value),
+      };
+      return acc;
+    }, {} as Record<string, ISdkBlockField>),
   }));
 
 export const parseBlockFieldDefinitions = (

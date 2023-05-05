@@ -1,7 +1,214 @@
+import { TBlockFieldType } from "./types";
 import {
   addReferencesNodeToRichTextValue,
   parseBlockFieldDefinitions,
+  parseSdkBlocks,
+  stringifyBlocksForSdk,
 } from "./utils";
+
+const TEST_SDK_BLOCKS = [
+  {
+    id: "500dc77b-0127-477a-bb64-abe87ddd809d",
+    blockFields: {
+      image: {
+        label: "Image",
+        type: "media" as TBlockFieldType,
+        isRequired: true,
+        name: "image",
+        data: '{"sys":{"type":"Link","linkType":"Asset","id":"4WsHqDzyBOrDdKR0f3TAFZ"}}',
+      },
+      caption: {
+        label: "Caption",
+        type: "richText" as TBlockFieldType,
+        isRequired: true,
+        name: "caption",
+        data: '{"nodeType":"document","data":{},"content":[{"nodeType":"paragraph","data":{},"content":[{"nodeType":"text","value":"Julian loves to play with the rope toy","marks":[],"data":{}}]}],"references":[]}',
+      },
+      photoCredit: {
+        label: "Photo Credit",
+        type: "text" as TBlockFieldType,
+        isRequired: false,
+        name: "photoCredit",
+        data: '"Sarah Mogin"',
+      },
+      featured: {
+        label: "Featured",
+        type: "boolean" as TBlockFieldType,
+        isRequired: false,
+        name: "featured",
+        data: "true",
+      },
+    },
+  },
+  {
+    id: "7d2bae59-9335-45d6-8f58-6046954c6962",
+    blockFields: {
+      image: {
+        label: "Image",
+        type: "media" as TBlockFieldType,
+        isRequired: true,
+        name: "image",
+        data: '{"sys":{"type":"Link","linkType":"Asset","id":"363uwOPxBTIj34ZD0zNVMA"}}',
+      },
+      caption: {
+        label: "Caption",
+        type: "richText" as TBlockFieldType,
+        isRequired: true,
+        name: "caption",
+        data: '{"nodeType":"document","data":{},"content":[{"nodeType":"paragraph","data":{},"content":[{"nodeType":"text","value":"Julian is a ","marks":[],"data":{}},{"nodeType":"text","value":"cuddle bug.","marks":[{"type":"underline"}],"data":{}}]}],"references":[]}',
+      },
+      photoCredit: {
+        label: "Photo Credit",
+        type: "text" as TBlockFieldType,
+        isRequired: false,
+        name: "photoCredit",
+        data: "null",
+      },
+      featured: {
+        label: "Featured",
+        type: "boolean" as TBlockFieldType,
+        isRequired: false,
+        name: "featured",
+        data: "null",
+      },
+    },
+  },
+];
+
+const TEST_PARSED_BLOCKS = [
+  {
+    id: "500dc77b-0127-477a-bb64-abe87ddd809d",
+    fields: [
+      {
+        label: "Image",
+        type: "media" as TBlockFieldType,
+        isRequired: true,
+        name: "image",
+        value: {
+          sys: {
+            type: "Link",
+            linkType: "Asset",
+            id: "4WsHqDzyBOrDdKR0f3TAFZ",
+          },
+        },
+      },
+      {
+        label: "Caption",
+        type: "richText" as TBlockFieldType,
+        isRequired: true,
+        name: "caption",
+        value: {
+          nodeType: "document",
+          data: {},
+          content: [
+            {
+              nodeType: "paragraph",
+              data: {},
+              content: [
+                {
+                  nodeType: "text",
+                  value: "Julian loves to play with the rope toy",
+                  marks: [],
+                  data: {},
+                },
+              ],
+            },
+          ],
+          references: [],
+        },
+      },
+      {
+        label: "Photo Credit",
+        type: "text" as TBlockFieldType,
+        isRequired: false,
+        name: "photoCredit",
+        value: "Sarah Mogin",
+      },
+      {
+        label: "Featured",
+        type: "boolean" as TBlockFieldType,
+        isRequired: false,
+        name: "featured",
+        value: true,
+      },
+    ],
+  },
+  {
+    id: "7d2bae59-9335-45d6-8f58-6046954c6962",
+    fields: [
+      {
+        label: "Image",
+        type: "media" as TBlockFieldType,
+        isRequired: true,
+        name: "image",
+        value: {
+          sys: {
+            type: "Link",
+            linkType: "Asset",
+            id: "363uwOPxBTIj34ZD0zNVMA",
+          },
+        },
+      },
+      {
+        label: "Caption",
+        type: "richText" as TBlockFieldType,
+        isRequired: true,
+        name: "caption",
+        value: {
+          nodeType: "document",
+          data: {},
+          content: [
+            {
+              nodeType: "paragraph",
+              data: {},
+              content: [
+                {
+                  nodeType: "text",
+                  value: "Julian is a ",
+                  marks: [],
+                  data: {},
+                },
+                {
+                  nodeType: "text",
+                  value: "cuddle bug.",
+                  marks: [{ type: "underline" }],
+                  data: {},
+                },
+              ],
+            },
+          ],
+          references: [],
+        },
+      },
+      {
+        label: "Photo Credit",
+        type: "text" as TBlockFieldType,
+        isRequired: false,
+        name: "photoCredit",
+        value: null,
+      },
+      {
+        label: "Featured",
+        type: "boolean" as TBlockFieldType,
+        isRequired: false,
+        name: "featured",
+        value: null,
+      },
+    ],
+  },
+];
+
+describe("parseSdkBlocks", () => {
+  it("works", () => {
+    expect(parseSdkBlocks(TEST_SDK_BLOCKS)).toEqual(TEST_PARSED_BLOCKS);
+  });
+});
+
+describe("stringifyBlocksForSdk", () => {
+  it("works", () => {
+    expect(stringifyBlocksForSdk(TEST_PARSED_BLOCKS)).toEqual(TEST_SDK_BLOCKS);
+  });
+});
 
 describe("parseBlockFieldDefinitions", () => {
   it("works", () => {
