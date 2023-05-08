@@ -9,7 +9,7 @@ import {
 const TEST_SDK_BLOCKS = [
   {
     id: "500dc77b-0127-477a-bb64-abe87ddd809d",
-    blockFields: {
+    data__REPEATER: {
       image: {
         label: "Image",
         type: "media" as TBlockFieldType,
@@ -42,7 +42,7 @@ const TEST_SDK_BLOCKS = [
   },
   {
     id: "7d2bae59-9335-45d6-8f58-6046954c6962",
-    blockFields: {
+    data__REPEATER: {
       image: {
         label: "Image",
         type: "media" as TBlockFieldType,

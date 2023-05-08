@@ -15,9 +15,9 @@ const BLOCKFIELD_DEF_REGEX =
   /(?<label>[^:]+):(?<type>\w+)(?:-(?<options>[^!]+))?(?<required>!?)/;
 
 export const parseSdkBlocks = (sdkBlocks?: ISdkBlock[]): IBlock[] =>
-  sdkBlocks?.map(({ blockFields, ...block }) => ({
+  sdkBlocks?.map(({ data__REPEATER, ...block }) => ({
     ...block,
-    fields: Object.values(blockFields).map(({ data, ...blockField }) => ({
+    fields: Object.values(data__REPEATER).map(({ data, ...blockField }) => ({
       ...blockField,
       value: JSON.parse(data),
     })),
@@ -27,7 +27,7 @@ export const stringifyBlocksForSdk = (blocks: IBlock[]): ISdkBlock[] =>
   blocks.map(({ fields, ...block }) => ({
     ...block,
     // "fields" is a protected property name in Gatsby
-    blockFields: fields.reduce((acc, { value, ...blockField }) => {
+    data__REPEATER: fields.reduce((acc, { value, ...blockField }) => {
       acc[blockField.name] = {
         ...blockField,
         data: JSON.stringify(value),

@@ -23,7 +23,7 @@ export interface IBlockField extends IBlockFieldDefinition {
 
 export interface ISdkBlock {
   id: string;
-  blockFields: Record<string, ISdkBlockField>;
+  data__REPEATER: Record<string, ISdkBlockField>;
 }
 
 export interface ISdkBlockField extends IBlockFieldDefinition {

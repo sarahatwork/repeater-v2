@@ -2,7 +2,7 @@ import { FieldAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import Block from "./Block";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Button, Note, Stack } from "@contentful/f36-components";
+import { Button, Card, Heading, Note, Stack } from "@contentful/f36-components";
 import { v4 as uuid } from "uuid";
 import { IBlock } from "../../lib/types";
 import {
@@ -29,6 +29,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { ErrorBoundary } from "react-error-boundary";
 
 const Field = () => {
   const sdk = useSDK<FieldAppSDK>();
@@ -173,4 +174,26 @@ const Field = () => {
   );
 };
 
-export default Field;
+const FieldWrapper: React.FC = () => {
+  const sdk = useSDK<FieldAppSDK>();
+
+  return (
+    <ErrorBoundary
+      fallbackRender={({ resetErrorBoundary }) => (
+        <Card>
+          <Stack flexDirection="column">
+            <Heading>Something went wrong.</Heading>
+            <Button onClick={resetErrorBoundary} size="small">
+              Clear data
+            </Button>
+          </Stack>
+        </Card>
+      )}
+      onReset={() => sdk.field.setValue(undefined)}
+    >
+      <Field />
+    </ErrorBoundary>
+  );
+};
+
+export default FieldWrapper;
