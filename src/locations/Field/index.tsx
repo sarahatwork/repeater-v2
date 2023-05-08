@@ -72,12 +72,27 @@ const Field = () => {
     [blocks]
   );
 
-  const handleDelete = useCallback((id: string) => {
-    setBlocks((e) => {
-      const newBlocks = e.filter((block) => block.id !== id);
-      return newBlocks;
-    });
-  }, []);
+  const handleDelete = useCallback(
+    (id: string) => {
+      sdk.dialogs
+        .openConfirm({
+          title: "Are you sure?",
+          message: "Are you sure you want to delete this block?",
+          intent: "negative",
+          confirmLabel: "Delete",
+          cancelLabel: "Cancel",
+        })
+        .then((result) => {
+          if (result) {
+            setBlocks((e) => {
+              const newBlocks = e.filter((block) => block.id !== id);
+              return newBlocks;
+            });
+          }
+        });
+    },
+    [sdk.dialogs]
+  );
 
   const handleAddNew = useCallback(() => {
     const id = uuid();
@@ -125,14 +140,38 @@ const Field = () => {
   }, []);
 
   const handleClear = useCallback(() => {
-    setBlocks([]);
-  }, []);
+    sdk.dialogs
+      .openConfirm({
+        title: "Are you sure?",
+        message: "Are you sure you want to clear all blocks?",
+        intent: "negative",
+        confirmLabel: "Clear all",
+        cancelLabel: "Cancel",
+      })
+      .then((result) => {
+        if (result) {
+          setBlocks([]);
+        }
+      });
+  }, [sdk.dialogs]);
 
   const handleCopyFromLocale = useCallback(
     (locale: string) => {
-      const valueForOtherLocale =
-        sdk.entry.fields[sdk.field.id].getValue(locale);
-      setBlocks(parseSdkBlocks(valueForOtherLocale));
+      sdk.dialogs
+        .openConfirm({
+          title: "Are you sure?",
+          message: `Are you sure you want to copy content from ${locale} to this locale?`,
+          intent: "primary",
+          confirmLabel: `Copy from ${locale}`,
+          cancelLabel: "Cancel",
+        })
+        .then((result) => {
+          if (result) {
+            const valueForOtherLocale =
+              sdk.entry.fields[sdk.field.id].getValue(locale);
+            setBlocks(parseSdkBlocks(valueForOtherLocale));
+          }
+        });
     },
     [sdk]
   );
