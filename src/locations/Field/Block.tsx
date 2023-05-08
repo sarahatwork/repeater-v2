@@ -1,11 +1,13 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import {
   Badge,
+  Box,
   DragHandle,
   EntryCard,
   MenuItem,
   MenuSectionTitle,
   Stack,
+  Text,
 } from "@contentful/f36-components";
 import { IBlock } from "../../lib/types";
 import {
@@ -39,6 +41,9 @@ const Block: React.FC<IProps> = ({ index, block, onDelete, onEdit }) => {
         zIndex: 100,
       }
     : undefined;
+
+  const [maxWidth, setMaxWidth] = useState(0);
+
   const handleDelete = useCallback(() => {
     onDelete(block.id);
   }, [onDelete, block.id]);
@@ -47,7 +52,7 @@ const Block: React.FC<IProps> = ({ index, block, onDelete, onEdit }) => {
     onEdit(block.id);
   }, [onEdit, block.id]);
 
-  const asset = useEntity("Asset", getBlockThumbnail(block)).data?.fields
+  const asset = useEntity("Asset", getBlockThumbnail(block))?.data?.fields
     ?.file?.["en-US"]?.url;
 
   return (
@@ -69,10 +74,27 @@ const Block: React.FC<IProps> = ({ index, block, onDelete, onEdit }) => {
         </MenuItem>,
       ]}
     >
-      <Stack alignItems="flex-start">
-        {asset && <img alt="" src={asset} width={80} />}
-        <Stack flexDirection="column" alignItems="flex-start">
-          <b>{getBlockTitle(block, index)}</b>
+      <Stack
+        ref={(el: HTMLDivElement) => {
+          const newWidth = el?.parentElement?.parentElement?.clientWidth;
+          if (newWidth) setMaxWidth(newWidth);
+        }}
+        alignItems="flex-start"
+        style={{
+          maxWidth,
+        }}
+      >
+        {asset && (
+          <Box style={{ width: 60, flexShrink: 0 }}>
+            <img alt="" src={asset} />
+          </Box>
+        )}
+        <Stack
+          flexDirection="column"
+          alignItems="flex-start"
+          style={{ overflow: "hidden" }}
+        >
+          <Text isTruncated>{getBlockTitle(block, index)}</Text>
           {getIsBlockInvalid(block) && (
             <Badge variant="negative">Invalid</Badge>
           )}

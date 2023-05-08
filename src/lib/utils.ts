@@ -10,6 +10,7 @@ import {
   ISdkBlockField,
 } from "./types";
 import camelCase from "lodash/camelCase";
+import { documentToPlainTextString } from "@contentful/rich-text-plain-text-renderer";
 
 const BLOCKFIELD_DEF_REGEX =
   /(?<label>[^:]+):(?<type>\w+)(?:-(?<options>[^!]+))?(?<required>!?)/;
@@ -85,11 +86,38 @@ export const getIsFormInvalid = (blocks: IBlock[]) => {
 export const getIsBlockInvalid = (block: IBlock) =>
   block.fields.some((blockField) => getValidationMessage(blockField));
 
-export const getBlockTitle = (block: IBlock, index: number) =>
-  block.fields.find((p) => p.type === "text")?.value || `Block ${index + 1}`;
+export const getBlockTitle = (block: IBlock, index: number) => {
+  const firstTextField = block.fields.find((p) =>
+    ["text", "richText"].includes(p.type)
+  );
+  let out = "";
+  if (firstTextField?.type === "text") {
+    out = firstTextField.value;
+  } else if (firstTextField?.type === "richText") {
+    out = documentToPlainTextString(firstTextField.value);
+  }
 
-export const getBlockThumbnail = (block: IBlock) =>
-  block.fields.find((p) => p.type === "media" && !!p.value)?.value.sys.id;
+  out = out || `Block ${index + 1}`;
+
+  return out;
+};
+
+export const getBlockThumbnail = (block: IBlock) => {
+  const firstMediaField = block.fields.find(
+    (p) =>
+      ["mediaSingle", "mediaMultiple"].includes(p.type) &&
+      p.value &&
+      !(Array.isArray(p.value) && p.value.length === 0)
+  );
+
+  if (!firstMediaField) return;
+
+  if (firstMediaField?.type === "mediaSingle") {
+    return firstMediaField.value?.sys.id;
+  }
+
+  return firstMediaField.value?.[0]?.sys.id;
+};
 
 const getReferences = (node: TRichTextNode): TReference[] => {
   const references: TReference[] = [];

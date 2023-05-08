@@ -1,6 +1,7 @@
 export const BlockFieldTypes = {
   TEXT: "text",
-  MEDIA: "media",
+  MEDIA_SINGLE: "mediaSingle",
+  MEDIA_MULTIPLE: "mediaMultiple",
   RICH_TEXT: "richText",
   BOOLEAN: "boolean",
 } as const;

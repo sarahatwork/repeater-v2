@@ -4,7 +4,10 @@ import {
 } from "@contentful/field-editor-test-utils";
 import { SingleLineEditor } from "@contentful/field-editor-single-line";
 import { useCallback, useMemo, useState } from "react";
-import { SingleMediaEditor } from "@contentful/field-editor-reference";
+import {
+  MultipleMediaEditor,
+  SingleMediaEditor,
+} from "@contentful/field-editor-reference";
 import { FieldAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import { IBlockField, TRichTextNode } from "../../lib/types";
@@ -83,8 +86,9 @@ const BlockFormField: React.FC<IProps> = ({ index, blockField, onUpdate }) => {
         return (
           <RichTextEditor sdk={{ ...sdk, field }} isInitiallyDisabled={false} />
         );
-      case "media":
+      case "mediaSingle":
         return (
+          // Extra div for full-width style
           <div>
             <SingleMediaEditor
               isInitiallyDisabled={false}
@@ -93,6 +97,15 @@ const BlockFormField: React.FC<IProps> = ({ index, blockField, onUpdate }) => {
               parameters={{ instance: {} }}
             />
           </div>
+        );
+      case "mediaMultiple":
+        return (
+          <MultipleMediaEditor
+            isInitiallyDisabled={false}
+            sdk={{ ...sdk, field }}
+            viewType="card"
+            parameters={{ instance: {} }}
+          />
         );
       default:
         return null;

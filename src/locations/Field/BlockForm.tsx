@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import BlockFormField from "./BlockFormField";
-import { Box, Button } from "@contentful/f36-components";
+import { Box, Button, Heading } from "@contentful/f36-components";
 import { IBlock } from "../../lib/types";
 import { getBlockTitle } from "../../lib/utils";
 import { WorkbenchHeader } from "@contentful/f36-workbench";
@@ -40,7 +40,16 @@ const BlockForm: React.FC<IProps> = ({
       <Box marginTop="spacingM" marginBottom="spacingL">
         <WorkbenchHeader
           onBack={onBack}
-          title={getBlockTitle(block, index)}
+          title={
+            <Heading
+              isTruncated
+              marginBottom="none"
+              marginRight="spacingM"
+              style={{ flexGrow: 1 }}
+            >
+              {getBlockTitle(block, index)}
+            </Heading>
+          }
           actions={
             <Button size="small" onClick={handleDelete}>
               Delete

@@ -12,7 +12,7 @@ const TEST_SDK_BLOCKS = [
     data__REPEATER: {
       image: {
         label: "Image",
-        type: "media" as TBlockFieldType,
+        type: "mediaSingle" as TBlockFieldType,
         isRequired: true,
         name: "image",
         data: {
@@ -69,7 +69,7 @@ const TEST_SDK_BLOCKS = [
     data__REPEATER: {
       image: {
         label: "Image",
-        type: "media" as TBlockFieldType,
+        type: "mediaSingle" as TBlockFieldType,
         isRequired: true,
         name: "image",
         data: {
@@ -135,7 +135,7 @@ const TEST_PARSED_BLOCKS = [
     fields: [
       {
         label: "Image",
-        type: "media" as TBlockFieldType,
+        type: "mediaSingle" as TBlockFieldType,
         isRequired: true,
         name: "image",
         value: {
@@ -192,7 +192,7 @@ const TEST_PARSED_BLOCKS = [
     fields: [
       {
         label: "Image",
-        type: "media" as TBlockFieldType,
+        type: "mediaSingle" as TBlockFieldType,
         isRequired: true,
         name: "image",
         value: {
@@ -267,7 +267,7 @@ describe("stringifyBlocksForSdk", () => {
 describe("parseBlockFieldDefinitions", () => {
   it("works", () => {
     expect(
-      parseBlockFieldDefinitions("Title:text!,Featured Image:media")
+      parseBlockFieldDefinitions("Title:text!,Featured Image:mediaSingle")
     ).toEqual([
       {
         label: "Title",
@@ -278,7 +278,7 @@ describe("parseBlockFieldDefinitions", () => {
       {
         label: "Featured Image",
         name: "featuredImage",
-        type: "media",
+        type: "mediaSingle",
         isRequired: false,
       },
     ]);
@@ -309,7 +309,7 @@ describe("parseBlockFieldDefinitions", () => {
 
   it("throws error on invalid definition format", () => {
     expect(() =>
-      parseBlockFieldDefinitions("Titletext!,Featured Image:media")
+      parseBlockFieldDefinitions("Titletext!,Featured Image:mediaSingle")
     ).toThrowError("Invalid Block Field Definitions: Titletext!");
   });
 
@@ -321,7 +321,7 @@ describe("parseBlockFieldDefinitions", () => {
 
   it("throws error on invalid type", () => {
     expect(() =>
-      parseBlockFieldDefinitions("Title:banana!,Featured Image:media")
+      parseBlockFieldDefinitions("Title:banana!,Featured Image:mediaSingle")
     ).toThrowErrorMatchingInlineSnapshot(`
 "[
   {
@@ -329,12 +329,13 @@ describe("parseBlockFieldDefinitions", () => {
     \\"code\\": \\"invalid_enum_value\\",
     \\"options\\": [
       \\"text\\",
-      \\"media\\",
+      \\"mediaSingle\\",
+      \\"mediaMultiple\\",
       \\"richText\\",
       \\"boolean\\"
     ],
     \\"path\\": [],
-    \\"message\\": \\"Invalid enum value. Expected 'text' | 'media' | 'richText' | 'boolean', received 'banana'\\"
+    \\"message\\": \\"Invalid enum value. Expected 'text' | 'mediaSingle' | 'mediaMultiple' | 'richText' | 'boolean', received 'banana'\\"
   }
 ]"
 `);
