@@ -20,7 +20,7 @@ import {
 } from "../../lib/utils";
 import BlockForm from "./BlockForm";
 import { EntityProvider } from "@contentful/field-editor-reference";
-import { PlusIcon } from "@contentful/f36-icons";
+import { PlusIcon, ArrowDownIcon } from "@contentful/f36-icons";
 import {
   DndContext,
   DragEndEvent,
@@ -40,11 +40,6 @@ import { ErrorBoundary } from "react-error-boundary";
 
 const Field = () => {
   const sdk = useSDK<FieldAppSDK>();
-  console.log("====CURRENT LOCALE", sdk.field.locale);
-  console.log(sdk.locales);
-  console.log(sdk.entry.fields[sdk.field.id].getValue("en-US"));
-  console.log(sdk.entry.fields[sdk.field.id].locales);
-
   const initialBlocks = parseSdkBlocks(sdk.field.getValue());
   const [blocks, setBlocks] = useState<IBlock[]>(initialBlocks);
   const [editingBlockId, setEditingBlockId] = useState<string>();
@@ -142,6 +137,8 @@ const Field = () => {
     [sdk]
   );
 
+  const availableLocalesForField = sdk.entry.fields[sdk.field.id].locales;
+
   return (
     <>
       {editingBlock && (
@@ -176,27 +173,36 @@ const Field = () => {
               Add new block
             </Button>
 
-            {/* TODO Add confirm modal */}
-            <Button onClick={handleClear} size="small">
-              Clear all blocks
-            </Button>
-
             <Menu>
               <Menu.Trigger>
-                <Button>Copy content from...</Button>
+                <Button size="small" endIcon={<ArrowDownIcon />}>
+                  More Actions
+                </Button>
               </Menu.Trigger>
               <Menu.List>
-                {sdk.locales.available.map((locale) => {
-                  if (locale === sdk.field.locale) return null;
-                  return (
-                    <Menu.Item
-                      key={locale}
-                      onClick={() => handleCopyFromLocale(locale)}
-                    >
-                      {sdk.locales.names[locale]} ({locale})
-                    </Menu.Item>
-                  );
-                })}
+                {/* TODO Add confirm modal */}
+                <Menu.Item onClick={handleClear}>Clear all blocks</Menu.Item>
+                {availableLocalesForField.length > 1 && (
+                  <Menu.Submenu>
+                    <Menu.SubmenuTrigger>
+                      Copy from locale...
+                    </Menu.SubmenuTrigger>
+                    <Menu.List>
+                      {/* TODO Add confirm modal */}
+                      {availableLocalesForField.map((locale) => {
+                        if (locale === sdk.field.locale) return null;
+                        return (
+                          <Menu.Item
+                            key={locale}
+                            onClick={() => handleCopyFromLocale(locale)}
+                          >
+                            {sdk.locales.names[locale]} ({locale})
+                          </Menu.Item>
+                        );
+                      })}
+                    </Menu.List>
+                  </Menu.Submenu>
+                )}
               </Menu.List>
             </Menu>
           </Stack>
