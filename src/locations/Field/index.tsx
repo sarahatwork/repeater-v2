@@ -2,7 +2,14 @@ import { FieldAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import Block from "./Block";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Button, Card, Heading, Note, Stack } from "@contentful/f36-components";
+import {
+  Button,
+  Card,
+  Heading,
+  Menu,
+  Note,
+  Stack,
+} from "@contentful/f36-components";
 import { v4 as uuid } from "uuid";
 import { IBlock } from "../../lib/types";
 import {
@@ -33,6 +40,11 @@ import { ErrorBoundary } from "react-error-boundary";
 
 const Field = () => {
   const sdk = useSDK<FieldAppSDK>();
+  console.log("====CURRENT LOCALE", sdk.field.locale);
+  console.log(sdk.locales);
+  console.log(sdk.entry.fields[sdk.field.id].getValue("en-US"));
+  console.log(sdk.entry.fields[sdk.field.id].locales);
+
   const initialBlocks = parseSdkBlocks(sdk.field.getValue());
   const [blocks, setBlocks] = useState<IBlock[]>(initialBlocks);
   const [editingBlockId, setEditingBlockId] = useState<string>();
@@ -117,6 +129,19 @@ const Field = () => {
     }
   }, []);
 
+  const handleClear = useCallback(() => {
+    setBlocks([]);
+  }, []);
+
+  const handleCopyFromLocale = useCallback(
+    (locale: string) => {
+      const valueForOtherLocale =
+        sdk.entry.fields[sdk.field.id].getValue(locale);
+      setBlocks(parseSdkBlocks(valueForOtherLocale));
+    },
+    [sdk]
+  );
+
   return (
     <>
       {editingBlock && (
@@ -129,7 +154,7 @@ const Field = () => {
           key={editingBlockId}
         />
       )}
-      <div hidden={!!editingBlock}>
+      <div hidden={!!editingBlock} style={{ minHeight: 200 }}>
         <Stack
           flexDirection="column"
           spacing="spacingS"
@@ -141,6 +166,40 @@ const Field = () => {
               valid, no changes will be saved.
             </Note>
           )}
+
+          <Stack>
+            <Button
+              startIcon={<PlusIcon />}
+              onClick={handleAddNew}
+              size="small"
+            >
+              Add new block
+            </Button>
+
+            {/* TODO Add confirm modal */}
+            <Button onClick={handleClear} size="small">
+              Clear all blocks
+            </Button>
+
+            <Menu>
+              <Menu.Trigger>
+                <Button>Copy content from...</Button>
+              </Menu.Trigger>
+              <Menu.List>
+                {sdk.locales.available.map((locale) => {
+                  if (locale === sdk.field.locale) return null;
+                  return (
+                    <Menu.Item
+                      key={locale}
+                      onClick={() => handleCopyFromLocale(locale)}
+                    >
+                      {sdk.locales.names[locale]} ({locale})
+                    </Menu.Item>
+                  );
+                })}
+              </Menu.List>
+            </Menu>
+          </Stack>
 
           <EntityProvider sdk={sdk}>
             <DndContext
@@ -164,10 +223,6 @@ const Field = () => {
               </SortableContext>
             </DndContext>
           </EntityProvider>
-
-          <Button startIcon={<PlusIcon />} onClick={handleAddNew} size="small">
-            Add new block
-          </Button>
         </Stack>
       </div>
     </>
