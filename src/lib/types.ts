@@ -27,7 +27,7 @@ export interface ISdkBlock {
 }
 
 export interface ISdkBlockField extends IBlockFieldDefinition {
-  data: string;
+  data: any;
 }
 
 export type TReference = { contentful_id: string; type: string };

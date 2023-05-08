@@ -19,7 +19,7 @@ export const parseSdkBlocks = (sdkBlocks?: ISdkBlock[]): IBlock[] =>
     ...block,
     fields: Object.values(data__REPEATER).map(({ data, ...blockField }) => ({
       ...blockField,
-      value: JSON.parse(data),
+      value: data,
     })),
   })) || [];
 
@@ -27,10 +27,11 @@ export const stringifyBlocksForSdk = (blocks: IBlock[]): ISdkBlock[] =>
   blocks.map(({ fields, ...block }) => ({
     ...block,
     // "fields" is a protected property name in Gatsby
+    // data__REPEATER will also help Gatsby identify repeater app data and handle it properly
     data__REPEATER: fields.reduce((acc, { value, ...blockField }) => {
       acc[blockField.name] = {
         ...blockField,
-        data: JSON.stringify(value),
+        data: value,
       };
       return acc;
     }, {} as Record<string, ISdkBlockField>),
