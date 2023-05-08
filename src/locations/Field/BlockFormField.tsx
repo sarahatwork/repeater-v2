@@ -5,7 +5,9 @@ import {
 import { SingleLineEditor } from "@contentful/field-editor-single-line";
 import { useCallback, useMemo, useState } from "react";
 import {
+  MultipleEntryReferenceEditor,
   MultipleMediaEditor,
+  SingleEntryReferenceEditor,
   SingleMediaEditor,
 } from "@contentful/field-editor-reference";
 import { FieldAppSDK } from "@contentful/app-sdk";
@@ -105,6 +107,26 @@ const BlockFormField: React.FC<IProps> = ({ index, blockField, onUpdate }) => {
             sdk={{ ...sdk, field }}
             viewType="card"
             parameters={{ instance: {} }}
+          />
+        );
+      case "referenceSingle":
+        return (
+          <SingleEntryReferenceEditor
+            isInitiallyDisabled={false}
+            sdk={{ ...sdk, field }}
+            viewType="card"
+            parameters={{ instance: {} }}
+            hasCardEditActions={true}
+          />
+        );
+      case "referenceMultiple":
+        return (
+          <MultipleEntryReferenceEditor
+            isInitiallyDisabled={false}
+            sdk={{ ...sdk, field }}
+            viewType="card"
+            parameters={{ instance: {} }}
+            hasCardEditActions={true}
           />
         );
       default:

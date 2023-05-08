@@ -321,8 +321,8 @@ describe("parseBlockFieldDefinitions", () => {
 
   it("throws error on invalid type", () => {
     expect(() =>
-      parseBlockFieldDefinitions("Title:banana!,Featured Image:mediaSingle")
-    ).toThrowErrorMatchingInlineSnapshot(`
+parseBlockFieldDefinitions("Title:banana!,Featured Image:mediaSingle")).
+toThrowErrorMatchingInlineSnapshot(`
 "[
   {
     \\"received\\": \\"banana\\",
@@ -332,10 +332,12 @@ describe("parseBlockFieldDefinitions", () => {
       \\"mediaSingle\\",
       \\"mediaMultiple\\",
       \\"richText\\",
-      \\"boolean\\"
+      \\"boolean\\",
+      \\"referenceSingle\\",
+      \\"referenceMultiple\\"
     ],
     \\"path\\": [],
-    \\"message\\": \\"Invalid enum value. Expected 'text' | 'mediaSingle' | 'mediaMultiple' | 'richText' | 'boolean', received 'banana'\\"
+    \\"message\\": \\"Invalid enum value. Expected 'text' | 'mediaSingle' | 'mediaMultiple' | 'richText' | 'boolean' | 'referenceSingle' | 'referenceMultiple', received 'banana'\\"
   }
 ]"
 `);
