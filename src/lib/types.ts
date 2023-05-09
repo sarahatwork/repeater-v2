@@ -4,31 +4,34 @@ import { BlockFieldTypes } from "./constants";
 export const BlockFieldTypeSchema = z.nativeEnum(BlockFieldTypes);
 export type TBlockFieldType = z.infer<typeof BlockFieldTypeSchema>;
 
-export interface IBlockFieldDefinition {
+export type TBlockFieldDefinition = {
   label: string;
   name: string;
-  type: TBlockFieldType;
   isRequired: boolean;
-  options?: string[];
-}
+} & (
+  | {
+      type: Exclude<TBlockFieldType, "text">;
+    }
+  | { type: "text"; options?: string[] }
+);
 
 export interface IBlock {
   id: string;
-  fields: IBlockField[];
+  fields: TBlockField[];
 }
 
-export interface IBlockField extends IBlockFieldDefinition {
+export type TBlockField = TBlockFieldDefinition & {
   value: any;
-}
+};
 
 export interface ISdkBlock {
   id: string;
-  data__REPEATER: Record<string, ISdkBlockField>;
+  data__REPEATER: Record<string, TSdkBlockField>;
 }
 
-export interface ISdkBlockField extends IBlockFieldDefinition {
+export type TSdkBlockField = TBlockFieldDefinition & {
   data: any;
-}
+};
 
 export type TReference = { contentful_id: string; type: string };
 

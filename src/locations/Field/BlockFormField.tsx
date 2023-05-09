@@ -12,7 +12,7 @@ import {
 } from "@contentful/field-editor-reference";
 import { FieldAppSDK } from "@contentful/app-sdk";
 import { useSDK } from "@contentful/react-apps-toolkit";
-import { IBlockField, TRichTextNode } from "../../lib/types";
+import { TBlockField, TRichTextNode } from "../../lib/types";
 import { FormControl } from "@contentful/f36-components";
 import {
   addReferencesNodeToRichTextValue,
@@ -23,18 +23,18 @@ import { BooleanEditor } from "@contentful/field-editor-boolean";
 import { DropdownEditor } from "@contentful/field-editor-dropdown";
 
 interface IProps {
-  blockField: IBlockField;
+  blockField: TBlockField;
   index: number;
   onUpdate: (index: number, value: any) => void;
 }
 
 const BlockFormField: React.FC<IProps> = ({ index, blockField, onUpdate }) => {
+  const options = blockField.type === "text" ? blockField.options : undefined;
+
   const [field, mitt] = createFakeFieldAPI((f) => ({
     ...f,
     getValue: () => blockField.value,
-    validations: blockField.options
-      ? [{ in: blockField.options }]
-      : f.validations,
+    validations: options ? [{ in: options }] : f.validations,
   }));
   const locales = createFakeLocalesAPI();
   const sdk = useSDK<FieldAppSDK>();
@@ -66,7 +66,7 @@ const BlockFormField: React.FC<IProps> = ({ index, blockField, onUpdate }) => {
       case "boolean":
         return <BooleanEditor field={field} isInitiallyDisabled={false} />;
       case "text":
-        if (blockField.options) {
+        if (options) {
           return (
             <DropdownEditor
               field={field}
@@ -132,7 +132,7 @@ const BlockFormField: React.FC<IProps> = ({ index, blockField, onUpdate }) => {
       default:
         return null;
     }
-  }, [field, locales, sdk, blockField.type, blockField.options]);
+  }, [field, locales, sdk, blockField.type, options]);
 
   return (
     <FormControl>

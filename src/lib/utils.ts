@@ -1,13 +1,13 @@
 import {
   IBlock,
-  IBlockField,
-  IBlockFieldDefinition,
+  TBlockField,
+  TBlockFieldDefinition,
   ISdkBlock,
   BlockFieldTypeSchema,
   TReference,
   TRichTextNode,
   TRichTextNodeWithReferences,
-  ISdkBlockField,
+  TSdkBlockField,
 } from "./types";
 import camelCase from "lodash/camelCase";
 import { documentToPlainTextString } from "@contentful/rich-text-plain-text-renderer";
@@ -35,12 +35,12 @@ export const stringifyBlocksForSdk = (blocks: IBlock[]): ISdkBlock[] =>
         data: value,
       };
       return acc;
-    }, {} as Record<string, ISdkBlockField>),
+    }, {} as Record<string, TSdkBlockField>),
   }));
 
 export const parseBlockFieldDefinitions = (
   input?: string
-): IBlockFieldDefinition[] => {
+): TBlockFieldDefinition[] => {
   if (!input) throw new Error("Block Field Definitions input is undefined");
 
   return input.split(",").map((blockFieldDefString) => {
@@ -64,8 +64,25 @@ export const parseBlockFieldDefinitions = (
   });
 };
 
+export const encodeBlockFieldDefinitions = (
+  definitions: TBlockFieldDefinition[]
+): string =>
+  definitions
+    .map(({ type, label, isRequired, ...props }) =>
+      [
+        label,
+        ":",
+        type,
+        "options" in props && props.options
+          ? `-${props.options.join("-")}`
+          : "",
+        isRequired ? "!" : "",
+      ].join("")
+    )
+    .join();
+
 export const getValidationMessage = (
-  blockField: IBlockField
+  blockField: TBlockField
 ): string | null => {
   if (
     blockField.isRequired &&

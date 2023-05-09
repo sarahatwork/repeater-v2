@@ -1,6 +1,7 @@
 import { TBlockFieldType } from "./types";
 import {
   addReferencesNodeToRichTextValue,
+  encodeBlockFieldDefinitions,
   parseBlockFieldDefinitions,
   parseSdkBlocks,
   stringifyBlocksForSdk,
@@ -321,8 +322,8 @@ describe("parseBlockFieldDefinitions", () => {
 
   it("throws error on invalid type", () => {
     expect(() =>
-parseBlockFieldDefinitions("Title:banana!,Featured Image:mediaSingle")).
-toThrowErrorMatchingInlineSnapshot(`
+      parseBlockFieldDefinitions("Title:banana!,Featured Image:mediaSingle")
+    ).toThrowErrorMatchingInlineSnapshot(`
 "[
   {
     \\"received\\": \\"banana\\",
@@ -341,6 +342,36 @@ toThrowErrorMatchingInlineSnapshot(`
   }
 ]"
 `);
+  });
+});
+
+describe("encodeBlockFieldDefinitions", () => {
+  it("works", () => {
+    expect(
+      encodeBlockFieldDefinitions([
+        {
+          label: "Title",
+          name: "title",
+          type: "text",
+          isRequired: true,
+        },
+        {
+          label: "Featured Image",
+          name: "featuredImage",
+          type: "mediaSingle",
+          isRequired: false,
+        },
+        {
+          label: "Dropdown",
+          name: "dropdown",
+          type: "text",
+          options: ["Twitter", "Instagram", "Pet Finder"],
+          isRequired: true,
+        },
+      ])
+    ).toBe(
+      "Title:text!,Featured Image:mediaSingle,Dropdown:text-Twitter-Instagram-Pet Finder!"
+    );
   });
 });
 

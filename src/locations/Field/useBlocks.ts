@@ -22,8 +22,8 @@ const useBlocks = () => {
       const blockField = blocks[blockIndex].fields[blockFieldIndex];
       if (blockField.value === value) return;
 
-      setBlocks((e) => {
-        const newBlocks = [...e];
+      setBlocks((blocks) => {
+        const newBlocks = [...blocks];
         newBlocks[blockIndex].fields[blockFieldIndex].value = value;
         return newBlocks;
       });

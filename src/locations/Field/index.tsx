@@ -55,7 +55,9 @@ const Field = () => {
             </Note>
           )}
 
-          <MenuBar setBlocks={setBlocks} onAddNew={handleEdit} />
+          {blocks.length > 3 && (
+            <MenuBar setBlocks={setBlocks} onAddNew={handleEdit} />
+          )}
 
           <EntityProvider sdk={sdk}>
             <DragAndDrop items={blocks} setItems={setBlocks}>
@@ -71,9 +73,7 @@ const Field = () => {
             </DragAndDrop>
           </EntityProvider>
 
-          {blocks.length > 3 && (
-            <MenuBar setBlocks={setBlocks} onAddNew={handleEdit} />
-          )}
+          <MenuBar setBlocks={setBlocks} onAddNew={handleEdit} />
         </Stack>
       </div>
     </>
