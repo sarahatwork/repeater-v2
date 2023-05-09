@@ -15,6 +15,8 @@ export type TBlockFieldDefinition = {
   | { type: "text"; options?: string[] }
 );
 
+export type TGeneratorDefinition = TBlockFieldDefinition & { id: string };
+
 export interface IBlock {
   id: string;
   fields: TBlockField[];

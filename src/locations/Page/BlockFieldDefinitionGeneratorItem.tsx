@@ -2,6 +2,7 @@ import {
   Box,
   Card,
   Checkbox,
+  DragHandle,
   FormControl,
   Grid,
   Pill,
@@ -10,20 +11,20 @@ import {
   Stack,
   TextInput,
 } from "@contentful/f36-components";
-import { DragIcon } from "@contentful/f36-icons";
+import { DragIcon, DeleteTrimmedIcon } from "@contentful/f36-icons";
 
 import { CSS } from "@dnd-kit/utilities";
 import { BlockFieldLabels, BlockFieldTypes } from "../../lib/constants";
-import { TBlockFieldDefinition } from "../../lib/types";
+import { TGeneratorDefinition } from "../../lib/types";
 import { useCallback, useMemo } from "react";
 import { camelCase } from "lodash";
 import DragAndDrop from "../../components/DragAndDrop";
 import { rectSortingStrategy, useSortable } from "@dnd-kit/sortable";
 
 interface IProps {
-  item: TBlockFieldDefinition;
+  item: TGeneratorDefinition;
   onUpdate: (
-    func: (item: TBlockFieldDefinition) => TBlockFieldDefinition
+    func: (item: TGeneratorDefinition) => TGeneratorDefinition
   ) => void;
 }
 
@@ -35,6 +36,22 @@ const BlockFieldDefinitionGeneratorItem: React.FC<IProps> = ({
   item,
   onUpdate,
 }) => {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: item.id });
+
+  const style = transform
+    ? {
+        transform: CSS.Transform.toString({
+          x: transform.x,
+          y: transform.y,
+          scaleX: 1,
+          scaleY: 1,
+        }),
+        transition,
+        zIndex: 100,
+      }
+    : undefined;
+
   const createChangeHandler = useCallback(
     (propName: string) => (event: any) => {
       const value =
@@ -101,8 +118,20 @@ const BlockFieldDefinitionGeneratorItem: React.FC<IProps> = ({
   );
 
   return (
-    <Card>
-      <Grid columns="1fr 1fr" rowGap="spacingS" columnGap="spacingM">
+    <Card
+      dragHandleRender={() => <DragHandle label="Drag" {...listeners} />}
+      {...attributes}
+      style={style}
+      withDragHandle
+      ref={setNodeRef}
+      padding="none"
+    >
+      <Grid
+        columns="1fr 1fr"
+        rowGap="spacingS"
+        columnGap="spacingM"
+        padding="spacingM"
+      >
         <FormControl isRequired marginBottom="none">
           <FormControl.Label>Label</FormControl.Label>
           <TextInput
@@ -112,6 +141,26 @@ const BlockFieldDefinitionGeneratorItem: React.FC<IProps> = ({
           />
         </FormControl>
         <FormControl isRequired marginBottom="none">
+          {/* TODO Wire up and add back in <Box
+            style={{
+              position: "absolute",
+              right: 0,
+              top: 0,
+              background: "linear-gradient(-135deg,#eee 35px,transparent 0)",
+              overflow: "hidden",
+              height: 60,
+              width: 60,
+              border: 0,
+            }}
+          >
+            <DeleteTrimmedIcon
+              variant="secondary"
+              onClick={() => {
+                console.log("click");
+              }}
+              style={{ position: "absolute", right: 7, top: 7 }}
+            />
+          </Box> */}
           <FormControl.Label>Name</FormControl.Label>
           <TextInput value={item.name} isDisabled size="small" />
         </FormControl>

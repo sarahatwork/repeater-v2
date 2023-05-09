@@ -7,30 +7,35 @@ import {
   TextInput,
 } from "@contentful/f36-components";
 import { useCallback, useState } from "react";
-import { TBlockFieldDefinition } from "../../lib/types";
+import { TGeneratorDefinition } from "../../lib/types";
 import { PlusIcon } from "@contentful/f36-icons";
 import BlockFieldDefinitionGeneratorItem from "./BlockFieldDefinitionGeneratorItem";
 import { encodeBlockFieldDefinitions } from "../../lib/utils";
+import DragAndDrop from "../../components/DragAndDrop";
+import { verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { v4 as uuid } from "uuid";
 
-const DEFAULT_NEW_FIELD = {
-  label: "",
-  name: "",
-  type: "text",
-  isRequired: false,
-} as const;
+const createNewField = () =>
+  ({
+    id: uuid(),
+    label: "",
+    name: "",
+    type: "text",
+    isRequired: false,
+  } as const);
 
 const BlockFieldDefinitionGenerator = () => {
-  const [items, setItems] = useState<TBlockFieldDefinition[]>([
-    DEFAULT_NEW_FIELD,
+  const [items, setItems] = useState<TGeneratorDefinition[]>([
+    createNewField(),
   ]);
 
   const handleAddNew = useCallback(() => {
-    setItems((items) => [...items, DEFAULT_NEW_FIELD]);
+    setItems((items) => [...items, createNewField()]);
   }, []);
 
   const createUpdateHandler = useCallback(
     (index: number) =>
-      (func: (item: TBlockFieldDefinition) => TBlockFieldDefinition) => {
+      (func: (item: TGeneratorDefinition) => TGeneratorDefinition) => {
         setItems((items) => {
           const newItems = [...items];
           newItems[index] = func(items[index]);
@@ -45,13 +50,19 @@ const BlockFieldDefinitionGenerator = () => {
       <Subheading>Block Field Definition Generator</Subheading>
 
       <Stack flexDirection="column" alignItems="flex-start">
-        {items.map((item, index) => (
-          <BlockFieldDefinitionGeneratorItem
-            key={index}
-            item={item}
-            onUpdate={createUpdateHandler(index)}
-          />
-        ))}
+        <DragAndDrop
+          items={items}
+          setItems={setItems}
+          strategy={verticalListSortingStrategy}
+        >
+          {items.map((item, index) => (
+            <BlockFieldDefinitionGeneratorItem
+              key={index}
+              item={item}
+              onUpdate={createUpdateHandler(index)}
+            />
+          ))}
+        </DragAndDrop>
 
         <Button startIcon={<PlusIcon />} onClick={handleAddNew} size="small">
           Add new field
