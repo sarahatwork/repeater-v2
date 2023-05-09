@@ -9,21 +9,24 @@ import {
 } from "@dnd-kit/core";
 import {
   SortableContext,
+  SortingStrategy,
   arrayMove,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { Dispatch, ReactNode, SetStateAction, useCallback } from "react";
+import { ReactNode, useCallback } from "react";
 
 interface IProps<T> {
   items: T[];
-  setItems: Dispatch<SetStateAction<T[]>>;
+  setItems: (func: (input: T[]) => T[]) => void;
   children: ReactNode;
+  strategy?: SortingStrategy;
 }
 
 const DropAndDrop = <T extends { id: string }>({
   items,
   setItems,
+  strategy = verticalListSortingStrategy,
   children,
 }: IProps<T>) => {
   const sensors = useSensors(
@@ -42,7 +45,7 @@ const DropAndDrop = <T extends { id: string }>({
           const oldIndex = items.findIndex((e) => e.id === active.id);
           const newIndex = items.findIndex((e) => e.id === over.id);
 
-          return arrayMove(items, oldIndex, newIndex);
+          return arrayMove<T>(items, oldIndex, newIndex);
         });
       }
     },
@@ -55,7 +58,7 @@ const DropAndDrop = <T extends { id: string }>({
       sensors={sensors}
       collisionDetection={closestCenter}
     >
-      <SortableContext items={items} strategy={verticalListSortingStrategy}>
+      <SortableContext items={items} strategy={strategy}>
         {children}
       </SortableContext>
     </DndContext>

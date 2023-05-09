@@ -10,7 +10,7 @@ import { EntityProvider } from "@contentful/field-editor-reference";
 import { ErrorBoundary } from "react-error-boundary";
 import useBlocks from "./useBlocks";
 import MenuBar from "./MenuBar";
-import DragAndDrop from "./DragAndDrop";
+import DragAndDrop from "../../components/DragAndDrop";
 
 const Field = () => {
   const sdk = useSDK<FieldAppSDK>();
