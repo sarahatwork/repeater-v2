@@ -11,7 +11,7 @@ import {
   Stack,
   TextInput,
 } from "@contentful/f36-components";
-import { DragIcon, DeleteTrimmedIcon } from "@contentful/f36-icons";
+import { DragIcon } from "@contentful/f36-icons";
 
 import { CSS } from "@dnd-kit/utilities";
 import { BlockFieldLabels, BlockFieldTypes } from "../../lib/constants";
@@ -127,7 +127,7 @@ const BlockFieldDefinitionGeneratorItem: React.FC<IProps> = ({
       padding="none"
     >
       <Grid
-        columns="1fr 1fr"
+        columns="50% 50%"
         rowGap="spacingS"
         columnGap="spacingM"
         padding="spacingM"

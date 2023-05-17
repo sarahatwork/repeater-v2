@@ -1,6 +1,7 @@
 import {
   Button,
   CopyButton,
+  FormControl,
   SectionHeading,
   Stack,
   Subheading,
@@ -18,8 +19,8 @@ import { v4 as uuid } from "uuid";
 const createNewField = () =>
   ({
     id: uuid(),
-    label: "",
-    name: "",
+    label: "Field Label",
+    name: "fieldLabel",
     type: "text",
     isRequired: false,
   } as const);
@@ -73,17 +74,21 @@ const BlockFieldDefinitionGenerator = () => {
         Generated Definition
       </SectionHeading>
 
-      <TextInput.Group>
-        <TextInput
-          isDisabled
-          isReadOnly
-          value={encodeBlockFieldDefinitions(items)}
-        />
-        <CopyButton
-          value={encodeBlockFieldDefinitions(items)}
-          tooltipProps={{ placement: "right", usePortal: true }}
-        />
-      </TextInput.Group>
+      <FormControl>
+        <TextInput.Group>
+          <TextInput
+            // isDisabled
+            isReadOnly
+            value={encodeBlockFieldDefinitions(items)}
+            maxLength={255}
+          />
+          <CopyButton
+            value={encodeBlockFieldDefinitions(items)}
+            tooltipProps={{ placement: "right", usePortal: true }}
+          />
+        </TextInput.Group>
+        <FormControl.Counter />
+      </FormControl>
     </>
   );
 };
