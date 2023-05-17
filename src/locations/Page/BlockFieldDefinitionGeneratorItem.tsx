@@ -127,7 +127,7 @@ const BlockFieldDefinitionGeneratorItem: React.FC<IProps> = ({
       padding="none"
     >
       <Grid
-        columns="50% 50%"
+        columns="1fr 1fr"
         rowGap="spacingS"
         columnGap="spacingM"
         padding="spacingM"

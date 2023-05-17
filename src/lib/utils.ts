@@ -66,8 +66,8 @@ export const parseBlockFieldDefinitions = (
 
 export const encodeBlockFieldDefinitions = (
   definitions: TBlockFieldDefinition[]
-): string[] => {
-  const matches = definitions
+): string =>
+  definitions
     .map(({ type, label, isRequired, ...props }) =>
       [
         label,
@@ -79,11 +79,7 @@ export const encodeBlockFieldDefinitions = (
         isRequired ? "!" : "",
       ].join("")
     )
-    .join()
-    .match(/.{1,255}/g) as string[];
-
-  return matches;
-};
+    .join();
 
 export const getValidationMessage = (
   blockField: TBlockField

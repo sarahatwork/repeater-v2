@@ -368,46 +368,10 @@ describe("encodeBlockFieldDefinitions", () => {
           options: ["Twitter", "Instagram", "Pet Finder"],
           isRequired: true,
         },
-        {
-          label: "Dropdown2",
-          name: "dropdown2",
-          type: "text",
-          options: ["Twitter", "Instagram", "Pet Finder"],
-          isRequired: true,
-        },
-        {
-          label: "Dropdown3",
-          name: "dropdown3",
-          type: "text",
-          options: ["Twitter", "Instagram", "Pet Finder"],
-          isRequired: true,
-        },
-        {
-          label: "Dropdown4",
-          name: "dropdown4",
-          type: "text",
-          options: ["Twitter", "Instagram", "Pet Finder"],
-          isRequired: true,
-        },
-        {
-          label: "Dropdown5",
-          name: "dropdown5",
-          type: "text",
-          options: ["Twitter", "Instagram", "Pet Finder"],
-          isRequired: true,
-        },
-        {
-          label: "Dropdown6",
-          name: "dropdown6",
-          type: "text",
-          options: ["Twitter", "Instagram", "Pet Finder"],
-          isRequired: true,
-        },
       ])
-    ).toEqual([
-      "Title:text!,Featured Image:mediaSingle,Dropdown:text-Twitter-Instagram-Pet Finder!,Dropdown2:text-Twitter-Instagram-Pet Finder!,Dropdown3:text-Twitter-Instagram-Pet Finder!,Dropdown4:text-Twitter-Instagram-Pet Finder!,Dropdown5:text-Twitter-Instagram-Pet ",
-      "Finder!,Dropdown6:text-Twitter-Instagram-Pet Finder!",
-    ]);
+    ).toBe(
+      "Title:text!,Featured Image:mediaSingle,Dropdown:text-Twitter-Instagram-Pet Finder!"
+    );
   });
 });
 
